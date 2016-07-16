@@ -1,0 +1,18 @@
+{
+  "private": true,
+  "name": "lambda-http",
+  "version": "0.0.1",
+  "description": "λ http",
+  "dependencies": {
+    "bunyan": "*",
+    "lodash": "*"
+  },
+  "files": [
+    "dist",
+    "node_modules"
+  ],
+  "main": "src/index",
+  "prepublishConfig": {
+    "main": "dist/index"
+  }
+}
