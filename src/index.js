@@ -1,11 +1,11 @@
 import _ from 'lodash';
 import bunyan from 'bunyan';
 import http from 'http';
-import pkg from '../package.json';
+import modulePkg from '../package.json';
 
-var staticEnv;
+let staticEnv;
 try {
-    staticEnv = require('../.env.json');
+    staticEnv = require('../.env.json'); // eslint-disable-line global-require
 } catch (_err) {
     staticEnv = {};
 }
@@ -29,7 +29,10 @@ try {
 
 exports.LambdaHttp = class LambdaHttp {
     constructor([e = {}, ctx = {}, next = _.noop], options = {}) {
-        this.log = this._createLogger(pkg, ctx);
+        this._e = e;
+        this._ctx = ctx;
+        this._next = next;
+        this.log = this._createLogger(modulePkg, ctx);
 
         if (!options.noCatchUncaughtException) {
             process.on('uncaughtException', this._onUncaughtException.bind(this));
@@ -46,14 +49,16 @@ exports.LambdaHttp = class LambdaHttp {
         this._req = new exports.IncomingMessage(this._connection, e, ctx, this.log);
         this._res = new exports.ServerResponse(this._req, ctx, this.log, next);
         return this;
-    };
+    }
 
     createServer(fun) {
         try {
             fun(this._req, this._res);
         } catch (err) {
             this.log.error({err});
-            next(null, {
+            let instance =
+                        `${this._ctx.invokedFunctionArn}#request:${this._ctx.awsRequestId}`;
+            this._next(null, {
                 statusCode: 500,
                 statusMessage: http.STATUS_CODES[500],
                 headers: {
@@ -63,11 +68,11 @@ exports.LambdaHttp = class LambdaHttp {
                     type: 'about:blank',
                     title: 'Internal Server Error',
                     status: 500,
-                    instance: `${ctx.invokedFunctionArn || ctx.functionName}#request:${ctx.awsRequestId}`
+                    instance
                 })
             });
-        };
-    };
+        }
+    }
 
     _createLogger(pkg, ctx) {
         return bunyan.createLogger({
@@ -82,14 +87,14 @@ exports.LambdaHttp = class LambdaHttp {
                     process.env.LOG_LEVEL
             }]
         });
-    };
+    }
 
     _onUncaughtException(err) {
         this.log.error({err});
-        process.nextTicket(function() {
-            process.exit(1);
+        process.nextTick(function() {
+            process.exit(1); // eslint-disable-line no-process-exit
         });
-    };
+    }
 };
 
 exports.IncomingMessage = class IncomingMessage extends http.IncomingMessage {
@@ -119,13 +124,13 @@ exports.ServerResponse = class ServerResponse extends http.ServerResponse {
 
         // NOTE express sets the __proto__ to http.ServerResponse
         _.forEach(['_writeRaw', 'end'], (method) => {
-            this[method] = this.__proto__[method].bind(this);
+            this[method] = this.__proto__[method].bind(this); // eslint-disable-line no-proto
         });
-    };
+    }
 
-    _writeRaw(data, encoding, callback) {
+    _writeRaw(data, encoding, _callback) {
         if (_.isFunction(encoding)) {
-            callback = encoding;
+            _callback = encoding;
             encoding = null;
         }
 
@@ -136,7 +141,7 @@ exports.ServerResponse = class ServerResponse extends http.ServerResponse {
         } else {
             throw new Error('ServerResponse._writeRaw expects Buffer or string');
         }
-    };
+    }
 
     end(data, encoding) {
         super.end(data, encoding);
@@ -146,5 +151,5 @@ exports.ServerResponse = class ServerResponse extends http.ServerResponse {
             headers: this._headers,
             body: this._body.toString()
         });
-    };
+    }
 };
