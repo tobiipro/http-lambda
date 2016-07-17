@@ -3,13 +3,6 @@ import bunyan from 'bunyan';
 import http from 'http';
 import modulePkg from '../package.json';
 
-let staticEnv;
-try {
-    staticEnv = require('../.env.json'); // eslint-disable-line global-require
-} catch (_err) {
-    staticEnv = {};
-}
-
 /*
  ctx = {
  functionName: undefined,
@@ -32,14 +25,13 @@ exports.LambdaHttp = class LambdaHttp {
         this._e = e;
         this._ctx = ctx;
         this._next = next;
-        this.log = this._createLogger(modulePkg, ctx);
 
-        if (!options.noCatchUncaughtException) {
-            process.on('uncaughtException', this._onUncaughtException.bind(this));
+        if (!options.noLogger) {
+            this._createLogger();
         }
 
-        if (!options.noStaticEnv) {
-            _.merge(process.env, staticEnv);
+        if (!options.ignoreUncaughtException) {
+            process.on('uncaughtException', this._onUncaughtException.bind(this));
         }
 
         // NOTE normalizing; AWS prefers clientContext to be null, not undefined
@@ -55,7 +47,9 @@ exports.LambdaHttp = class LambdaHttp {
         try {
             fun(this._req, this._res);
         } catch (err) {
-            this.log.error({err});
+            if (this.log) {
+                this.log.error({err});
+            }
             let instance =
                         `${this._ctx.invokedFunctionArn}#request:${this._ctx.awsRequestId}`;
             this._next(null, {
@@ -74,23 +68,28 @@ exports.LambdaHttp = class LambdaHttp {
         }
     }
 
-    _createLogger(pkg, ctx) {
-        return bunyan.createLogger({
-            name: pkg.name,
+    _createLogger() {
+        // TODO do not allow clientContext.env.LOG_LEVEL to be lower than
+        // process.env.LOG_LEVEL
+        let level = _.get(this._ctx, 'clientContext.env.LOG_LEVEL') ||
+                    process.env.LOG_LEVEL;
+        this.log = bunyan.createLogger({
+            name: this._pkg.name,
             serializers: bunyan.stdSerializers,
             src: true,
-            req_id: ctx.awsRequestId,
+            req_id: this._ctx.awsRequestId,
             // TODO add https://github.com/qualitybath/bunyan-slack
             streams: [{
                 stream: process.stdout,
-                level: _.get(ctx, 'clientContext.env.LOG_LEVEL') ||
-                    process.env.LOG_LEVEL
+                level
             }]
         });
     }
 
     _onUncaughtException(err) {
-        this.log.error({err});
+        if (this.log) {
+            this.log.error({err});
+        }
         process.nextTick(function() {
             process.exit(1); // eslint-disable-line no-process-exit
         });
