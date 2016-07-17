@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import bunyan from 'bunyan';
 import http from 'http';
-import modulePkg from '../package.json';
+import pkg from '../package.json';
 
 /*
  ctx = {
@@ -22,6 +22,7 @@ import modulePkg from '../package.json';
 
 exports.LambdaHttp = class LambdaHttp {
     constructor([e = {}, ctx = {}, next = _.noop], options = {}) {
+        this._pkg = pkg;
         this._e = e;
         this._ctx = ctx;
         this._next = next;
