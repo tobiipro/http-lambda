@@ -4,15 +4,15 @@
   "version": "0.0.1",
   "description": "λ http",
   "dependencies": {
+    "babel-plugin-transform-class-properties": "*",
+    "babel-preset-es2015-node": "*",
+    "babel-register": "*",
     "bunyan": "*",
     "lodash": "*"
   },
   "files": [
-    "dist",
-    "node_modules"
-  ],
-  "main": "src/index",
-  "prepublishConfig": {
-    "main": "dist/index"
-  }
+    "index.js",
+    "node_modules",
+    "src"
+  ]
 }
