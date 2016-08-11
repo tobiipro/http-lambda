@@ -20,136 +20,157 @@ import pkg from '../package.json';
  }
  */
 
-exports.LambdaHttp = class LambdaHttp {
-    constructor([e = {}, ctx = {}, next = _.noop], options = {}) {
-        this._pkg = pkg;
-        this._e = e;
-        this._ctx = ctx;
-        this._next = next;
+export let LambdaHttp = class LambdaHttp {
+  constructor(e = {}, ctx = {}, next = _.noop, options = {}) {
+    this._pkg = pkg;
+    this._e = e;
+    this._ctx = ctx;
+    this._next = next;
 
-        if (!options.noLogger) {
-            this._createLogger();
-        }
-
-        if (!options.ignoreUncaughtException) {
-            process.on('uncaughtException', this._onUncaughtException.bind(this));
-        }
-
-        // NOTE normalizing; AWS prefers clientContext to be null, not undefined
-        ctx.clientContext = ctx.clientContext || undefined;
-
-        this._connection = {destroy: _.noop};
-        this._req = new exports.IncomingMessage(this._connection, e, ctx, this.log);
-        this._res = new exports.ServerResponse(this._req, ctx, this.log, next);
-        return this;
+    if (!options.noLogger) {
+      this._createLogger();
     }
 
-    createServer(fun) {
-        try {
-            fun(this._req, this._res);
-        } catch (err) {
-            if (this.log) {
-                this.log.error({err});
-            }
-            let instance =
-                        `${this._ctx.invokedFunctionArn}#request:${this._ctx.awsRequestId}`;
-            this._next(null, {
-                statusCode: 500,
-                statusMessage: http.STATUS_CODES[500],
-                headers: {
-                    'content-type': 'application/problem+json'
-                },
-                body: JSON.stringify({
-                    type: 'about:blank',
-                    title: 'Internal Server Error',
-                    status: 500,
-                    instance
-                })
-            });
-        }
+    if (!options.ignoreUncaughtException) {
+      process.on('uncaughtException', this._onUncaughtException.bind(this));
     }
 
-    _createLogger() {
-        // TODO do not allow clientContext.env.LOG_LEVEL to be lower than
-        // process.env.LOG_LEVEL
-        let level = _.get(this._ctx, 'clientContext.env.LOG_LEVEL') ||
-                    process.env.LOG_LEVEL;
-        this.log = bunyan.createLogger({
-            name: this._pkg.name,
-            serializers: bunyan.stdSerializers,
-            src: true,
-            req_id: this._ctx.awsRequestId,
-            // TODO add https://github.com/qualitybath/bunyan-slack
-            streams: [{
-                stream: process.stdout,
-                level
-            }]
-        });
-    }
+    // NOTE normalizing; AWS prefers clientContext to be null, not undefined
+    ctx.clientContext = ctx.clientContext || undefined;
 
-    _onUncaughtException(err) {
-        if (this.log) {
-            this.log.error({err});
-        }
-        process.nextTick(function() {
-            process.exit(1); // eslint-disable-line no-process-exit
-        });
+    this._connection = {destroy: _.noop};
+    this._req = new exports.IncomingMessage(this._connection, e, ctx, this.log);
+    this._res = new exports.ServerResponse(this._req, ctx, this.log, next);
+    return this;
+  }
+
+  createServer(fun) {
+    try {
+      fun(this._req, this._res);
+    } catch (err) {
+      if (this.log) {
+        this.log.error({err});
+      }
+      let instance =
+            `${this._ctx.invokedFunctionArn}#request:${this._ctx.awsRequestId}`;
+      this._next(null, {
+        statusCode: 500,
+        statusMessage: http.STATUS_CODES[500],
+        headers: {
+          'content-type': 'application/problem+json'
+        },
+        body: JSON.stringify({
+          type: 'about:blank',
+          title: 'Internal Server Error',
+          status: 500,
+          instance
+        })
+      });
     }
+  }
+
+  _createLogger() {
+    // TODO do not allow clientContext.env.LOG_LEVEL to be lower than
+    // process.env.LOG_LEVEL
+    let level = _.get(this._ctx, 'clientContext.env.LOG_LEVEL') ||
+          process.env.LOG_LEVEL;
+    this.log = bunyan.createLogger({
+      name: this._pkg.name,
+      serializers: bunyan.stdSerializers,
+      src: true,
+      req_id: this._ctx.awsRequestId,
+      // TODO add https://github.com/qualitybath/bunyan-slack
+      streams: [{
+        stream: process.stdout,
+        level
+      }]
+    });
+  }
+
+  _onUncaughtException(err) {
+    if (this.log) {
+      this.log.error({err});
+    }
+    process.nextTick(function() {
+      process.exit(1); // eslint-disable-line no-process-exit
+    });
+  }
 };
 
-exports.IncomingMessage = class IncomingMessage extends http.IncomingMessage {
-    constructor(socket, e, ctx, log) {
-        super(socket);
-        this.httpVersionMajor = 1;
-        this.httpVersionMinor = 1;
-        this.httpVersion = '1.1';
+export class IncomingMessage extends http.IncomingMessage {
+  constructor(socket, e, ctx, log) {
+    super(socket);
+    this.httpVersionMajor = 1;
+    this.httpVersionMinor = 1;
+    this.httpVersion = '1.1';
 
-        this.method = e.method;
-        this.url = e.url;
-        this.headers = e.headers;
-        this.body = e.body;
-        this.ctx = ctx;
-        this.log = log;
-    }
-};
+    this.method = e.method;
+    this.url = e.url;
+    this.headers = e.headers;
+    this.body = e.body;
+    this.ctx = ctx;
+    this.log = log;
+  }
+}
 
-exports.ServerResponse = class ServerResponse extends http.ServerResponse {
-    constructor(req, ctx, log, next) {
-        super(req);
-        this._body = Buffer.from('');
+export class ServerResponse extends http.ServerResponse {
+  constructor(req, ctx, log, next) {
+    super(req);
+    this._body = Buffer.from('');
 
-        this.ctx = ctx;
-        this.log = log;
-        this._next = next;
+    this.ctx = ctx;
+    this.log = log;
+    this._next = next;
 
-        // NOTE express sets the __proto__ to http.ServerResponse
-        _.forEach(['_writeRaw', 'end'], (method) => {
-            this[method] = this.__proto__[method].bind(this); // eslint-disable-line no-proto
-        });
-    }
+    // NOTE express sets the __proto__ to http.ServerResponse
+    _.forEach(['_writeRaw', 'end'], (method) => {
+      this[method] = this.__proto__[method].bind(this); // eslint-disable-line no-proto
+    });
+  }
 
-    _writeRaw(data, encoding, _callback) {
-        if (_.isFunction(encoding)) {
-            _callback = encoding;
-            encoding = null;
-        }
-
-        if (_.isBuffer(data)) {
-            this._body = Buffer.concat([this._body, data]);
-        } else if (_.isString(data)) {
-            this._body = Buffer.concat([this._body, Buffer.from(data, encoding)]);
-        } else {
-            throw new Error('ServerResponse._writeRaw expects Buffer or string');
-        }
+  _writeRaw(data, encoding, _callback) {
+    if (_.isFunction(encoding)) {
+      _callback = encoding;
+      encoding = null;
     }
 
-    end(data, encoding) {
-        super.end(data, encoding);
-        this._next(null, {
-            statusCode: this.statusCode,
-            statusMessage: this.statusMessage,
-            headers: this._headers,
-            body: this._body.toString()
-        });
+    if (_.isBuffer(data)) {
+      this._body = Buffer.concat([this._body, data]);
+    } else if (_.isString(data)) {
+      this._body = Buffer.concat([this._body, Buffer.from(data, encoding)]);
+    } else {
+      throw new Error('ServerResponse._writeRaw expects Buffer or string');
     }
+  }
+
+  end(data, encoding) {
+    super.end(data, encoding);
+    this._next(null, {
+      statusCode: this.statusCode,
+      statusMessage: this.statusMessage,
+      headers: this._headers,
+      body: this._body.toString()
+    });
+  }
+}
+
+export let httpLambda = function(fn, options) {
+  return function(...args) {
+    let [,, next] = args;
+    try {
+      let lambdaHttp = new LambdaHttp(...args, options);
+      let result = fn(lambdaHttp, ...args);
+
+      if (result && _.isFunction(result.then)) {
+        result.then(function(value) {
+          next(null, value);
+        }).catch(next);
+        return;
+      }
+
+      return next(null, result);
+    } catch (err) {
+      return next(err);
+    }
+  };
 };
