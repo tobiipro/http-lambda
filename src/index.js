@@ -156,20 +156,11 @@ export class ServerResponse extends http.ServerResponse {
 
 export let httpLambda = function(fn, options) {
   return function(...args) {
-    let [,, next] = args;
     try {
       let lambdaHttp = new LambdaHttp(...args, options);
-      let result = fn(lambdaHttp, ...args);
-
-      if (result && _.isFunction(result.then)) {
-        result.then(function(value) {
-          next(null, value);
-        }).catch(next);
-        return;
-      }
-
-      return next(null, result);
+      fn(lambdaHttp, ...args);
     } catch (err) {
+      let [,, next] = args;
       return next(err);
     }
   };
