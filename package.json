@@ -4,9 +4,6 @@
   "version": "0.0.1",
   "description": "λ http",
   "dependencies": {
-    "babel-plugin-transform-class-properties": "*",
-    "babel-preset-es2015-node": "*",
-    "babel-register": "*",
     "bunyan": "*",
     "lodash": "*"
   },
