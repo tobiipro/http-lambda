@@ -10,11 +10,9 @@ within an AWS Lambda the same way you would write an HTTP server.
 
 ```javascript
 import express from 'express';
-import {LambdaHttp} from 'lambda-http';
+import {httpLambda} from 'lambda-http';
 
-exports.handle = function(e, ctx, _next) {
-  let http = new LambdaHttp(arguments);
-
+exports.handle = httpLambda(function(http, e, ctx, _next) {
   http.log.trace({
     ctx,
     e,
@@ -29,7 +27,7 @@ exports.handle = function(e, ctx, _next) {
     res.send('Hello world!');
   });
   http.createServer(app);
-};
+});
 
 ```
 
