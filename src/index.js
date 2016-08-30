@@ -36,6 +36,8 @@ export let LambdaHttp = class LambdaHttp {
       process.on('uncaughtException', this._onUncaughtException.bind(this));
     }
 
+    this._onInternalServerError = options.onInternalServerError;
+
     // NOTE normalizing; AWS prefers clientContext to be null, not undefined
     ctx.clientContext = ctx.clientContext || undefined;
 
@@ -52,21 +54,7 @@ export let LambdaHttp = class LambdaHttp {
       if (this.log) {
         this.log.error({err});
       }
-      let instance =
-            `${this._ctx.invokedFunctionArn}#request:${this._ctx.awsRequestId}`;
-      this._next(null, {
-        statusCode: 500,
-        statusMessage: http.STATUS_CODES[500],
-        headers: {
-          'content-type': 'application/problem+json'
-        },
-        body: JSON.stringify({
-          type: 'about:blank',
-          title: 'Internal Server Error',
-          status: 500,
-          instance
-        })
-      });
+      this._next(null, this._onInternalServerError(err));
     }
   }
 
@@ -95,6 +83,27 @@ export let LambdaHttp = class LambdaHttp {
     process.nextTick(function() {
       process.exit(1); // eslint-disable-line no-process-exit
     });
+  }
+
+  _onInternalServerError(err) {
+    if (this.log) {
+      this.log.error({err});
+    }
+    let instance =
+          `${this._ctx.invokedFunctionArn}#request:${this._ctx.awsRequestId}`;
+    return {
+      statusCode: 500,
+      statusMessage: http.STATUS_CODES[500],
+      headers: {
+        'content-type': 'application/problem+json'
+      },
+      body: JSON.stringify({
+        type: 'about:blank',
+        title: 'Internal Server Error',
+        status: 500,
+        instance
+      })
+    };
   }
 };
 
