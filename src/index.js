@@ -21,7 +21,13 @@ import pkg from '../package.json';
  */
 
 export let LambdaHttp = class LambdaHttp {
-  constructor(e = {}, ctx = {}, next = _.noop, options = {}) {
+  constructor(e = {}, ctx = {}, next = _.noop, options) {
+    options = options || {
+      noLogger: false,
+      ignoreUncaughtException: false,
+      onInternalServerError: this._onInternalServerError
+    };
+
     this._pkg = pkg;
     this._e = e;
     this._ctx = ctx;
