@@ -26,6 +26,7 @@ export let LambdaHttp = class LambdaHttp {
     this._e = e;
     this._ctx = ctx;
     this._next = next;
+    this._options = options;
 
     if (!options.noLogger) {
       this._createLogger();
