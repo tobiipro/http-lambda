@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import bunyan from 'bunyan';
 import http from 'http';
-import pkg from '../package.json';
 
 /*
  ctx = {
@@ -28,7 +27,6 @@ export let LambdaHttp = class LambdaHttp {
       onInternalServerError: this._onInternalServerError
     };
 
-    this._pkg = pkg;
     this._e = e;
     this._ctx = ctx;
     this._next = next;
@@ -72,7 +70,7 @@ export let LambdaHttp = class LambdaHttp {
     let level = _.get(this._ctx, 'clientContext.env.LOG_LEVEL') ||
           process.env.LOG_LEVEL;
     this.log = bunyan.createLogger({
-      name: this._pkg.name,
+      name: (this._options.pkg || {}).name,
       serializers: bunyan.stdSerializers,
       src: true,
       req_id: this._ctx.awsRequestId,
