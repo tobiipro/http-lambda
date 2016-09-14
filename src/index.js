@@ -134,7 +134,9 @@ export class IncomingMessage extends http.IncomingMessage {
 export class ServerResponse extends http.ServerResponse {
   constructor(req, ctx, log, next) {
     super(req);
-    this._body = Buffer.from('');
+    // maintain Node.js v4 compatibility
+    // this._body = Buffer.from('');
+    this._body = new Buffer('');
 
     this.ctx = ctx;
     this.log = log;
