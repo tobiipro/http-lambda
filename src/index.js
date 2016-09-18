@@ -50,6 +50,12 @@ export let LambdaHttp = class LambdaHttp {
     this._connection = {destroy: _.noop};
     this._req = new exports.IncomingMessage(this._connection, e, ctx, this.log);
     this._res = new exports.ServerResponse(this._req, ctx, this.log, next);
+
+    _.merge(this, _.pick(http, [
+      'METHOS',
+      'STATUS_CODES'
+    ]));
+
     return this;
   }
 
