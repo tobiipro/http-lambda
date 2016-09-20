@@ -15,24 +15,32 @@ import http from 'http';
  // From X-Amz-Client-Context (HTTP Request Header)
  // For inspiration see
  // http://docs.aws.amazon.com/mobileanalytics/latest/ug/PutEvents.html
- clientContext: undefined
+ clientContext: undefined,
+ // LAMBDA-HTTP CUSTOM
+ env: {}
  }
  */
 
 export let LambdaHttp = class LambdaHttp {
   constructor(e = {}, ctx = {}, next = _.noop, options) {
     options = options || {
-      noLogger: false,
       ignoreUncaughtException: false,
-      onInternalServerError: this._onInternalServerError
+      noLogger: false,
+      onInternalServerError: this._onInternalServerError,
+      pkg: {}
     };
+
+    // NOTE normalizing; AWS prefers clientContext to be null, not undefined or {}
+    ctx.clientContext = ctx.clientContext || {};
+
+    _.defaultsDeep(ctx, e.ctx, {
+      env: process.env
+    });
 
     this._e = e;
     this._ctx = ctx;
     this._next = next;
     this._options = options;
-
-    _.defaultsDeep(ctx, e.ctx);
 
     if (!options.noLogger) {
       this._createLogger();
@@ -44,15 +52,12 @@ export let LambdaHttp = class LambdaHttp {
 
     this._onInternalServerError = options.onInternalServerError;
 
-    // NOTE normalizing; AWS prefers clientContext to be null, not undefined
-    ctx.clientContext = ctx.clientContext || undefined;
-
     this._connection = {destroy: _.noop};
     this._req = new exports.IncomingMessage(this._connection, e, ctx, this.log);
     this._res = new exports.ServerResponse(this._req, ctx, this.log, next);
 
     _.merge(this, _.pick(http, [
-      'METHOS',
+      'METHODS',
       'STATUS_CODES'
     ]));
 
@@ -71,10 +76,11 @@ export let LambdaHttp = class LambdaHttp {
   }
 
   _createLogger() {
-    // TODO do not allow clientContext.env.LOG_LEVEL to be lower than
-    // process.env.LOG_LEVEL
-    let level = _.get(this._ctx, 'clientContext.env.LOG_LEVEL') ||
-          process.env.LOG_LEVEL;
+    // TODO do not allow clientContext.LOG_LEVEL to be lower than
+    // ctx.env.LOG_LEVEL
+    let level =
+        this._ctx.clientContext.LOG_LEVEL ||
+        this._ctx.env.LOG_LEVEL;
     this.log = bunyan.createLogger({
       name: (this._options.pkg || {}).name,
       serializers: bunyan.stdSerializers,
