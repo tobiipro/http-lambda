@@ -21,7 +21,7 @@ import http from 'http';
  }
  */
 
-export let LambdaHttp = class LambdaHttp {
+export class LambdaHttp {
   constructor(e = {}, ctx = {}, next = _.noop, options) {
     options = options || {
       ignoreUncaughtException: false,
