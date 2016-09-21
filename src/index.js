@@ -123,7 +123,7 @@ export class LambdaHttp {
       })
     };
   }
-};
+}
 
 export class IncomingMessage extends http.IncomingMessage {
   constructor(socket, e, ctx, log) {
