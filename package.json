@@ -2,7 +2,7 @@
   "private": true,
   "name": "lambda-http",
   "version": "0.0.1",
-  "description": "λ http",
+  "description": "Lambda HTTP",
   "dependencies": {
     "bunyan": "*",
     "lodash": "*"
