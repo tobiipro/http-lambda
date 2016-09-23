@@ -12,5 +12,8 @@
     "lib",
     "node_modules",
     "src"
-  ]
+  ],
+  "config": {
+    "upload-path": "misc/"
+  }
 }
