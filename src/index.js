@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import bunyan from 'bunyan';
 import http from 'http';
+import querystring from 'querystring';
 
 /*
  ctx = {
@@ -33,7 +34,9 @@ export class LambdaHttp {
     // NOTE normalizing; AWS prefers clientContext to be null, not undefined or {}
     ctx.clientContext = ctx.clientContext || {};
 
-    _.defaultsDeep(ctx, e.ctx, {
+    _.defaultsDeep(ctx, {
+      env: e.stageVariables
+    }, {
       env: process.env
     });
 
@@ -111,7 +114,7 @@ export class LambdaHttp {
           `${this._ctx.invokedFunctionArn}#request:${this._ctx.awsRequestId}`;
     return {
       statusCode: 500,
-      statusMessage: http.STATUS_CODES[500],
+      // statusMessage: http.STATUS_CODES[500],
       headers: {
         'content-type': 'application/problem+json'
       },
@@ -137,8 +140,10 @@ export class IncomingMessage extends http.IncomingMessage {
     };
 
 
-    this.method = e.method;
-    this.url = e.url;
+    let query = querystring.stringify(e.querystring || {});
+    query = query.length ? `?${query}` : query;
+    this.method = e.httpMethod;
+    this.url = `${e.path}${query}`;
     this.headers = e.headers;
     this.body = e.body;
     this.ctx = ctx;
@@ -193,7 +198,7 @@ export class ServerResponse extends http.ServerResponse {
     super.end(data, encoding);
     this._next(null, {
       statusCode: this.statusCode,
-      statusMessage: this.statusMessage,
+      // statusMessage: this.statusMessage,
       headers: this._headers,
       body: this._body.toString()
       // body: this._contentLength ? this._body.toString() : undefined // FIXME
