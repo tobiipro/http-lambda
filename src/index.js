@@ -79,20 +79,16 @@ export class LambdaHttp {
   }
 
   _createLogger() {
-    // TODO do not allow clientContext.LOG_LEVEL to be lower than
-    // ctx.env.LOG_LEVEL
-    let level =
-        this._ctx.clientContext.LOG_LEVEL ||
-        this._ctx.env.LOG_LEVEL;
+    let level = this._ctx.env.LOG_LEVEL;
     this.log = bunyan.createLogger({
       name: (this._options.pkg || {}).name,
+      level,
       serializers: bunyan.stdSerializers,
       src: true,
       req_id: this._ctx.awsRequestId,
       // TODO add https://github.com/qualitybath/bunyan-slack
       streams: [{
-        stream: process.stdout,
-        level
+        stream: process.stdout
       }]
     });
   }
