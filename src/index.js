@@ -139,12 +139,15 @@ export class IncomingMessage extends http.IncomingMessage {
       'transfer-encoding': true
     };
 
-
     let query = querystring.stringify(e.querystring || {});
     query = query.length ? `?${query}` : query;
     this.method = e.httpMethod;
     this.url = `${e.path}${query}`;
-    this.headers = e.headers;
+    this.headers = _.cloneDeep(e.headers);
+    this.headers = _.mapKeys(this.headers, function(_value, key) {
+      return _.toLower(key);
+    });
+    this.headers['content-length'] = (e.body || '').length;
     this.body = e.body;
     this.ctx = ctx;
     this.log = log;
