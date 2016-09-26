@@ -131,6 +131,11 @@ export class IncomingMessage extends http.IncomingMessage {
     this.httpVersionMajor = 1;
     this.httpVersionMinor = 1;
     this.httpVersion = '1.1';
+    this.chunkedEncoding = false;
+    this._removedHeader = {
+      'transfer-encoding': true
+    };
+
 
     this.method = e.method;
     this.url = e.url;
@@ -153,7 +158,12 @@ export class ServerResponse extends http.ServerResponse {
     this._next = next;
 
     // NOTE express sets the __proto__ to http.ServerResponse
-    _.forEach(['_writeRaw', 'end'], (method) => {
+    _.forEach([
+      '_writeRaw',
+      'addTrailers',
+      'end',
+      'writeHead'
+    ], (method) => {
       this[method] = this.__proto__[method].bind(this); // eslint-disable-line no-proto
     });
   }
@@ -175,6 +185,10 @@ export class ServerResponse extends http.ServerResponse {
     }
   }
 
+  addTrailers(_headers) {
+    // not supported
+  }
+
   end(data, encoding) {
     super.end(data, encoding);
     this._next(null, {
@@ -182,7 +196,14 @@ export class ServerResponse extends http.ServerResponse {
       statusMessage: this.statusMessage,
       headers: this._headers,
       body: this._body.toString()
+      // body: this._contentLength ? this._body.toString() : undefined // FIXME
     });
+  }
+
+  writeHead(statusCode, reason, obj) {
+    super.writeHead(statusCode, reason, obj);
+    // we want this._body to be just the body on this.end
+    this._header = '';
   }
 }
 
