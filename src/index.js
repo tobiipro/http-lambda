@@ -35,6 +35,8 @@ export class LambdaHttp {
     ctx.clientContext = ctx.clientContext || {};
 
     _.defaultsDeep(ctx, {
+      env: {}
+    }, {
       env: e.stageVariables
     }, {
       env: process.env
