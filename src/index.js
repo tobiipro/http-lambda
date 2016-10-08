@@ -4,21 +4,46 @@ import http from 'http';
 import querystring from 'querystring';
 
 /*
+ e = {
+   // path: "/test/hello",
+   path: undefined,
+   headers: {},
+   // pathParameters: {"proxy": "hello"},
+   pathParameters: {},
+   requestContext: {
+     accountId: undefined,
+     resourceId: undefined,
+     stage: undefined,
+     requestId: undefined,
+     identity: {},
+     // resourcePath: "/{proxy+}",
+     resourcePath: undefined,
+     httpMethod: undefined,
+     apiId: undefined
+   },
+   // resource: "/{proxy+}",
+   resource: undefined,
+   httpMethod: undefined,
+   queryStringParameters: {},
+   stageVariables: {}
+ }
+
  ctx = {
- functionName: undefined,
- functionVersion: undefined,
- invokedFunctionArn: undefined,
- memoryLimitInMB: undefined,
- awsRequestId: undefined,
- logGroupName: undefined,
- logStreamName: undefined,
- identity: undefined,
- // From X-Amz-Client-Context (HTTP Request Header)
- // For inspiration see
- // http://docs.aws.amazon.com/mobileanalytics/latest/ug/PutEvents.html
- clientContext: undefined,
- // LAMBDA-HTTP CUSTOM
- env: {}
+   functionName: undefined,
+   functionVersion: undefined,
+   invokedFunctionArn: undefined,
+   memoryLimitInMB: undefined,
+   awsRequestId: undefined,
+   logGroupName: undefined,
+   logStreamName: undefined,
+   identity: {},
+   // From X-Amz-Client-Context (HTTP Request Header)
+   // For inspiration see
+   // http://docs.aws.amazon.com/mobileanalytics/latest/ug/PutEvents.html
+   clientContext: {},
+   // LAMBDA-HTTP CUSTOM
+   // e.stageVariables + process.env
+   env: {}
  }
  */
 
