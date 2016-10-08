@@ -16,7 +16,6 @@
 // /////////////////////////////////////////////////////////////////////////////
 
 import _ from 'lodash';
-import bunyan from 'bunyan';
 import http from 'http';
 import querystring from 'querystring';
 
@@ -114,8 +113,8 @@ export class LambdaHttp {
     process.on('uncaughtException', options.onUncaughtException);
 
     this._connection = {destroy: _.noop};
-    this._req = new exports.IncomingMessage(this._connection, e, ctx, this.log);
-    this._res = new exports.ServerResponse(this._req, ctx, this.log, next);
+    this._req = new exports.IncomingMessage(this._connection, e, ctx);
+    this._res = new exports.ServerResponse(this._req, ctx, next);
 
     _.merge(this, _.pick(http, [
       'METHODS',
@@ -129,46 +128,25 @@ export class LambdaHttp {
     try {
       fun(this._req, this._res);
     } catch (err) {
-      if (this.log) {
-        this.log.error({err});
-      }
-      this._next(null, this._onInternalServerError(err));
+      this._next(null, this._options.onInternalServerError(err));
     }
-  }
-
-  _createLogger() {
-    let level = this._ctx.env.LOG_LEVEL;
-    this.log = bunyan.createLogger({
-      name: (this._options.pkg || {}).name,
-      level,
-      serializers: bunyan.stdSerializers,
-      src: true,
-      req_id: this._ctx.awsRequestId,
-      // TODO add https://github.com/qualitybath/bunyan-slack
-      streams: [{
-        stream: process.stdout
-      }]
-    });
   }
 
   _onUncaughtException(err) {
-    if (this.log) {
-      this.log.error({err});
-    }
+    console.error(err);
     process.nextTick(function() {
       process.exit(1); // eslint-disable-line no-process-exit
     });
   }
 
   _onInternalServerError(err) {
-    if (this.log) {
-      this.log.error({err});
-    }
+    console.error(err);
     let instance =
           `${this._ctx.invokedFunctionArn}#request:${this._ctx.awsRequestId}`;
     return {
       statusCode: 500,
-      // statusMessage: http.STATUS_CODES[500],
+      // API Gateway doesn't support statusMessage (yet)
+      // statusMessage: http.STATUS_CODES[500]
       headers: {
         'content-type': 'application/problem+json'
       },
@@ -183,7 +161,7 @@ export class LambdaHttp {
 }
 
 export class IncomingMessage extends http.IncomingMessage {
-  constructor(socket, e, ctx, log) {
+  constructor(socket, e, ctx) {
     super(socket);
     this.httpVersionMajor = 1;
     this.httpVersionMinor = 1;
@@ -204,19 +182,17 @@ export class IncomingMessage extends http.IncomingMessage {
     this.headers['content-length'] = (e.body || '').length;
     this.body = e.body;
     this.ctx = ctx;
-    this.log = log;
   }
 }
 
 export class ServerResponse extends http.ServerResponse {
-  constructor(req, ctx, log, next) {
+  constructor(req, ctx, next) {
     super(req);
     // maintain Node.js v4 compatibility
     // this._body = Buffer.from('');
     this._body = new Buffer('');
 
     this.ctx = ctx;
-    this.log = log;
     this._next = next;
 
     // NOTE express sets the __proto__ to http.ServerResponse
@@ -255,6 +231,7 @@ export class ServerResponse extends http.ServerResponse {
     super.end(data, encoding);
     this._next(null, {
       statusCode: this.statusCode,
+      // API Gateway doesn't support statusMessage (yet)
       // statusMessage: this.statusMessage,
       headers: this._headers,
       body: this._body.toString()
