@@ -1,3 +1,20 @@
+// /////////////////////////////////////////////////////////////////////////////
+// Copyright 2016- Tobii AB
+// Copyright 2016- AUTHORS
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// /////////////////////////////////////////////////////////////////////////////
+
 import _ from 'lodash';
 import bunyan from 'bunyan';
 import http from 'http';
@@ -45,24 +62,46 @@ import querystring from 'querystring';
    // e.stageVariables + process.env
    env: {}
  }
+
+ identity = {
+   cognitoIdentityPoolId: undefined,
+   accountId: undefined,
+   cognitoIdentityId: undefined,
+   caller: undefined,
+   apiKey: undefined,
+   sourceIp: undefined,
+   cognitoAuthenticationType: undefined,
+   cognitoAuthenticationProvider: undefined,
+   userArn: undefined,
+   userAgent: undefined,
+   user: undefined
+ }
  */
 
 export class LambdaHttp {
-  constructor(e = {}, ctx = {}, next = _.noop, options) {
-    options = options || {
-      ignoreUncaughtException: false,
-      noLogger: false,
-      onInternalServerError: this._onInternalServerError,
-      pkg: {}
-    };
+  constructor(e = {}, ctx = {}, next = _.noop, options = {}) {
+    _.defaultsDeep(options, {
+      onUncaughtException: this._onUncaughtException.bind(this),
+      onInternalServerError: this._onInternalServerError.bind(this)
+    });
 
-    // NOTE normalizing; AWS prefers clientContext to be null, not undefined or {}
-    ctx.clientContext = ctx.clientContext || {};
+    // NOTE normalizing
+    _.defaultsDeep(e, {
+      pathParameters: {},
+      requestContext: {
+        identity: {}
+      },
+      queryStringParameters: {},
+      stageVariables: {}
+    });
+    _.defaultsDeep(ctx, {
+      clientContext: {},
+      identity: {}
+    });
 
     _.defaultsDeep(ctx, {
-      env: {}
-    }, {
-      env: e.stageVariables
+      env: e.stageVariables,
+      requestContext: e.requestContext
     }, {
       env: process.env
     });
@@ -72,15 +111,7 @@ export class LambdaHttp {
     this._next = next;
     this._options = options;
 
-    if (!options.noLogger) {
-      this._createLogger();
-    }
-
-    if (!options.ignoreUncaughtException) {
-      process.on('uncaughtException', this._onUncaughtException.bind(this));
-    }
-
-    this._onInternalServerError = options.onInternalServerError;
+    process.on('uncaughtException', options.onUncaughtException);
 
     this._connection = {destroy: _.noop};
     this._req = new exports.IncomingMessage(this._connection, e, ctx, this.log);
