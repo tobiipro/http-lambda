@@ -171,7 +171,7 @@ export class IncomingMessage extends http.IncomingMessage {
       'transfer-encoding': true
     };
 
-    let query = querystring.stringify(e.querystring || {});
+    let query = querystring.stringify(e.queryStringParameters || {});
     query = query.length ? `?${query}` : query;
     this.method = e.httpMethod;
     this.url = `${e.path}${query}`;
