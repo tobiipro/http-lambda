@@ -154,7 +154,8 @@ export class LambdaHttp {
         type: 'about:blank',
         title: 'Internal Server Error',
         status: 500,
-        instance
+        instance,
+        renderer: 'lambda-http'
       })
     };
   }
