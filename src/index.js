@@ -129,6 +129,10 @@ export class LambdaHttp {
       fun(this._req, this._res);
     } catch (err) {
       this._next(null, this._options.onInternalServerError(err));
+
+      setTimeout(function() {
+        process.exit(); // eslint-disable-line no-process-exit
+      }, 100);
     }
   }
 
