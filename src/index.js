@@ -234,7 +234,15 @@ export class ServerResponse extends http.ServerResponse {
       statusCode: this.statusCode,
       // API Gateway doesn't support statusMessage (yet)
       // statusMessage: this.statusMessage,
-      headers: this._headers,
+      // API Gateway doesn't support multiple headers (yet)
+      // case #1951724541
+      headers: _.mapValues(this._headers, function(header) {
+        if (_.isArray(header)) {
+          header = header.join(', ');
+        }
+
+        return header;
+      }),
       body: this._body.toString()
       // body: this._contentLength ? this._body.toString() : undefined // FIXME
     });
