@@ -114,7 +114,10 @@ export class LambdaHttp {
 
     this._connection = {destroy: _.noop};
     this._req = new exports.IncomingMessage(this._connection, e, ctx);
-    this._res = new exports.ServerResponse(this._req, ctx, next);
+    this._res = new exports.ServerResponse(this._req, ctx, function() {
+      process.removeListener('uncaughtException', options.onUncaughtException);
+      next(...arguments);
+    });
 
     _.merge(this, _.pick(http, [
       'METHODS',
