@@ -139,7 +139,7 @@ export class LambdaHttp {
     }
   }
 
-  _onUncaughtException(err) {
+  _onUncaughtException(err) { // eslint-disable-line class-methods-use-this
     console.error(err);
     process.nextTick(function() {
       process.exit(1); // eslint-disable-line no-process-exit
@@ -231,7 +231,7 @@ export class ServerResponse extends http.ServerResponse {
     }
   }
 
-  addTrailers(_headers) {
+  addTrailers(_headers) { // eslint-disable-line class-methods-use-this
     // not supported
   }
 
