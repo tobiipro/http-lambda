@@ -1,0 +1,3 @@
+[submodule "core.inc.mk"]
+	path = core.inc.mk
+	url = git://github.com/andreineculau/core.inc.mk.git

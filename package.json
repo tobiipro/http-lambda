@@ -1,19 +1,30 @@
 {
   "private": true,
-  "name": "lambda-http",
+  "name": "http-lambda",
+  "description": "HTTP Lambda. Write AWS Lambdas the same way as with a local server.",
   "version": "0.0.1",
-  "description": "Lambda HTTP",
-  "dependencies": {
-    "bunyan": "*",
-    "lodash": "*"
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=6.10"
   },
-  "files": [
-    "index.js",
-    "lib",
-    "node_modules",
-    "src"
-  ],
-  "config": {
-    "upload-path": "misc/"
+  "dependencies": {
+    "bunyan": "1.8.10",
+    "lodash": "4.17.4"
+  },
+  "devDependencies": {
+    "babel-eslint": "7.2.3",
+    "eclint": "2.3.0",
+    "eslint": "4.1.0",
+    "eslint-config-firecloud": "git+ssh://git@git.tobii.intra:project/an/cloud/eslint-config-firecloud.git#82b45d1",
+    "eslint-plugin-async-await": "0.0.0",
+    "eslint-plugin-babel": "4.1.1",
+    "eslint-plugin-import": "2.6.0",
+    "eslint-plugin-max-len-2": "0.0.5",
+    "eslint-plugin-no-null": "1.0.2",
+    "npm-publish-git": "git://github.com/andreineculau/npm-publish-git.git#v0.0.1",
+    "support-firecloud": "git+ssh://git@git.tobii.intra:project/an/cloud/support-firecloud.git#288f34d"
+  },
+  "scripts": {
+    "prepare": "make"
   }
 }
