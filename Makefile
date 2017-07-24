@@ -15,7 +15,7 @@ export PATH
 # JS_FILES = $(shell $(FIND_Q) src -type f -name "*.js" -print)
 JS_FILES := index.js
 
-EC_FILES := $(shell $(GIT) ls-files | $(GREP) -v -e "^package-lock.json$$" -e "^LICENSE$$")
+EC_FILES := $(shell $(GIT) ls-files | $(GREP) -v -e "^package-lock.json$$" -e "^LICENSE$$" | $(SED) "s/^/'/g" | $(SED) "s/$$/'/g")
 
 ECLINT_ARGS := --max_line_length 1024
 ESLINT_ARGS := --config $(MAKE_PATH)/node_modules/eslint-config-firecloud/no-ide.yaml
