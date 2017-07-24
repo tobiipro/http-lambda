@@ -30,16 +30,11 @@ all: deps build check
 
 
 .PHONY: deps
-ifdef npm_lifecycle_event
-deps:
-	:
-else
 deps:
 	$(GIT) submodule sync
 	$(GIT) submodule update --init --recursive
 	$(NPM) install --ignore-scripts --no-package-lock
 	node_modules/eslint-config-firecloud/npm-install-peer-dependencies
-endif
 
 .PHONY: build
 build:
@@ -67,12 +62,7 @@ lint: lint-ec lint-js
 
 
 .PHONY: check
-ifdef npm_lifecycle_event
-check:
-	:
-else
 check: lint
-endif
 
 
 .PHONY: publish
@@ -83,3 +73,12 @@ publish:
 .PHONY: publish/%
 publish/%:
 	$(NPM_PUBLISH_GIT) --tag ${*}
+
+
+.PHONY: package-json-prepare
+ifneq (node_modules,$(shell basename $(abspath ..))) # let Makefile build, or else build runs twice
+package-json-prepare:
+	:
+else # installing as dependency
+package-json-prepare: build
+endif

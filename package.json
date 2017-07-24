@@ -25,6 +25,6 @@
     "support-firecloud": "git+ssh://git@git.tobii.intra:project/an/cloud/support-firecloud.git#f296c25"
   },
   "scripts": {
-    "prepare": "make"
+    "prepare": "make package-json-prepare"
   }
 }
