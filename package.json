@@ -15,14 +15,14 @@
     "babel-eslint": "7.2.3",
     "eclint": "2.3.0",
     "eslint": "4.1.0",
-    "eslint-config-firecloud": "git+ssh://git@git.tobii.intra:project/an/cloud/eslint-config-firecloud.git#82b45d1",
+    "eslint-config-firecloud": "git+ssh://git@git.tobii.intra:project/an/cloud/eslint-config-firecloud.git#ab0ade5",
     "eslint-plugin-async-await": "0.0.0",
     "eslint-plugin-babel": "4.1.1",
     "eslint-plugin-import": "2.6.0",
     "eslint-plugin-max-len-2": "0.0.5",
     "eslint-plugin-no-null": "1.0.2",
-    "npm-publish-git": "git://github.com/andreineculau/npm-publish-git.git#v0.0.1",
-    "support-firecloud": "git+ssh://git@git.tobii.intra:project/an/cloud/support-firecloud.git#288f34d"
+    "npm-publish-git": "git://github.com/andreineculau/npm-publish-git.git#v0.0.3",
+    "support-firecloud": "git+ssh://git@git.tobii.intra:project/an/cloud/support-firecloud.git#f296c25"
   },
   "scripts": {
     "prepare": "make"
