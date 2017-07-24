@@ -26,18 +26,19 @@ NPM_PUBLISH_GIT := $(shell $(WHICH_Q) npm-publish-git || echo "NPM_PUBLISH_GIT_N
 # ------------------------------------------------------------------------------
 
 .PHONY: all
-all: deps build check
+all: deps build check ## Fetch dependencies, build and check.
 
 
 .PHONY: deps
-deps:
+deps: ## Fetch dependencies.
 	$(GIT) submodule sync
 	$(GIT) submodule update --init --recursive
 	$(NPM) install --ignore-scripts --no-package-lock
 	node_modules/eslint-config-firecloud/npm-install-peer-dependencies
 
+
 .PHONY: build
-build:
+build: ## Build.
 	:
 
 
@@ -62,16 +63,25 @@ lint: lint-ec lint-js
 
 
 .PHONY: check
-check: lint
+check: lint ## Check.
+
+
+.PHONY: version
+version: version/patch ## Bump version (patch level).
+
+
+.PHONY: version/%
+version/%: ## Bump version to given level (major/minor/patch).
+	$(NPM) version ${*}
 
 
 .PHONY: publish
-publish:
+publish: ## Publish as a git version tag.
 	$(NPM_PUBLISH_GIT)
 
 
 .PHONY: publish/%
-publish/%:
+publish/%: ## Publish as given git tag.
 	$(NPM_PUBLISH_GIT) --tag ${*}
 
 
