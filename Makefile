@@ -29,11 +29,27 @@ NPM_PUBLISH_GIT = $(shell PATH="$(PATH)" $(WHICH_Q) npm-publish-git || echo "NPM
 all: deps build check ## Fetch dependencies, build and check.
 
 
+.PHONY: clean
+clean: ## Clean.
+	@$(ECHO_DO) "Cleaning..."
+	$(RM) \
+		node_modules
+	@$(ECHO_DONE)
+
+
+.PHONY: nuke
+nuke: ## Nuke (Stash actually) all files/changes not checked in.
+	@$(ECHO_DO) "Nuking..."
+	$(GIT) reset
+	$(GIT) stash --all
+	@$(ECHO_DONE)
+
+
 .PHONY: deps
 deps: ## Fetch dependencies.
 	$(GIT) submodule sync
 	$(GIT) submodule update --init --recursive
-	$(NPM) install --ignore-scripts --no-package-lock
+	$(NPM) install --no-package-lock
 	node_modules/eslint-config-firecloud/npm-install-peer-dependencies
 
 
