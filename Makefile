@@ -18,7 +18,7 @@ JS_FILES := index.js
 EC_FILES := $(shell $(GIT) ls-files | $(GREP) -v -e "^package-lock.json$$" -e "^LICENSE$$" | $(SED) "s/^/'/g" | $(SED) "s/$$/'/g")
 
 ECLINT_ARGS := --max_line_length 1024
-ESLINT_ARGS := --config $(MAKE_PATH)/node_modules/eslint-config-firecloud/no-ide.yaml
+ESLINT_ARGS := --config $(MAKE_PATH)/node_modules/eslint-config-firecloud/no-ide.js
 
 ECLINT := $(shell PATH="$(PATH)" $(WHICH_Q) eclint || echo "ECLINT_NOT_FOUND")
 NPM_PUBLISH_GIT := $(shell $(WHICH_Q) npm-publish-git || echo "NPM_PUBLISH_GIT_NOT_FOUND")
