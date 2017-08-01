@@ -77,7 +77,7 @@ let querystring = require('querystring');
   }
 */
 
-exports.LambaHttp = class LambdaHttp {
+exports.LambdaHttp = class LambdaHttp {
   constructor(e = {}, ctx = {}, next = _.noop, options = {}) {
     _.defaultsDeep(options, {
       onUncaughtException: this._onUncaughtException.bind(this),
