@@ -82,6 +82,11 @@ lint: lint-ec lint-js
 check: lint ## Check.
 
 
+.PHONY: test
+test: ## Test.
+	:
+
+
 .PHONY: version
 version: version/patch ## Bump version (patch level).
 

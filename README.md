@@ -1,4 +1,4 @@
-# http-lambda
+# http-lambda [![Build Status][2]][1]
 
 `http-lambda` mocks the `http` module's `createServer` function in the
 context of a AWS Lambda. The same solution could be generalized for other cloud
@@ -90,3 +90,7 @@ in (lambda event and context) and out (lambda callback).
 ## License
 
 [Apache 2.0](LICENSE)
+
+
+  [1]: https://travis-ci.org/tobiipro/http-lambda
+  [2]: https://travis-ci.org/tobiipro/http-lambda.svg?branch=master

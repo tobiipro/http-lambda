@@ -1,0 +1,14 @@
+sudo: false
+language:
+  - node_js
+node_js:
+  - node
+cache:
+  directories:
+    - core.inc.mk
+    - node_modules
+install:
+  - make deps
+script:
+  - make
+  - make test
