@@ -59,15 +59,15 @@ on July 17, 2016.
 AWS (via awslabs) has a similar effort [aws-serverless-express](https://github.com/awslabs/aws-serverless-express)
 with a first commit on September 14, 2016 and [published on October 4, 2016](https://aws.amazon.com/blogs/compute/going-serverless-migrating-an-express-application-to-amazon-api-gateway-and-aws-lambda/).
 
-AWS' solution is somewhat more abstract, but on the other hand more comvoluted as it:
+AWS' solution is somewhat more abstract, but on the other hand more comvoluted as:
 - it builds an HTTP request message from the lambda event signature
 - it also JSON-stringifies the lambda event and context into HTTP request headers ?!
 - it spins up a Node.js HTTP server on a UNIX socket
 - it pipes the request
 - and then it expects the consumer to spin up a Node.js HTTP server on a UNIX socket
-- have Node.js parse the just-built HTTP request message
-- run the app/listener
-- have Node.js build the HTTP response message
+- and have Node.js parse the just-built HTTP request message
+- and run the app/listener
+- and have Node.js build the HTTP response message
 - it then parses the just-built HTTP request message
 - builds the expected lambda callback signature
 
@@ -83,7 +83,7 @@ The advantage with the AWS solution is that it works more as a CGI, so in theory
 one could call any executable from Node.js, written in any language, tell it to
 listen on the UNIX socket, handle the HTTP request, respond and exit.
 Given the AWS lambda limitations, especially when running behind AWS API Gateway,
-which has a 20s timeout, a better solution is probably to pipe JSON signatures
+which has a 20s timeout, a faster solution is probably to pipe JSON signatures
 in (lambda event and context) and out (lambda callback).
 
 
