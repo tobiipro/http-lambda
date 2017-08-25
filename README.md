@@ -56,8 +56,10 @@ and a `application/problem+json` content if the lambda crashes.
 `http-lambda` is an effort of Tobii's Cloud Services that had its first commit
 on July 17, 2016.
 
-AWS (via awslabs) has a similar effort [aws-serverless-express](https://github.com/awslabs/aws-serverless-express)
-with a first commit on September 14, 2016 and [published on October 4, 2016](https://aws.amazon.com/blogs/compute/going-serverless-migrating-an-express-application-to-amazon-api-gateway-and-aws-lambda/).
+AWS (via awslabs) has a similar effort
+[aws-serverless-express](https://github.com/awslabs/aws-serverless-express)
+with a first commit on September 14, 2016 and
+[published on October 4, 2016](https://goo.gl/dUXSY8).
 
 AWS' solution is somewhat more abstract, but on the other hand more comvoluted as:
 - it builds an HTTP request message from the lambda event signature
