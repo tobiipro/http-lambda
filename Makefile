@@ -47,10 +47,12 @@ nuke: ## Nuke (Stash actually) all files/changes not checked in.
 
 .PHONY: deps
 deps: ## Fetch dependencies.
+	@$(ECHO_DO) "Fetching dependencies..."
 	$(GIT) submodule sync
 	$(GIT) submodule update --init --recursive
 	$(NPM) install --no-package-lock
 	node_modules/eslint-config-firecloud/npm-install-peer-dependencies
+	@$(ECHO_DONE)
 
 
 .PHONY: build
@@ -79,7 +81,10 @@ lint: lint-ec lint-js
 
 
 .PHONY: check
-check: lint ## Check.
+check: ## Check.
+	@$(ECHO_DO) "Checking..."
+	$(MAKE) lint
+	@$(ECHO_DONE)
 
 
 .PHONY: test
@@ -98,13 +103,16 @@ version/%: ## Bump version to given level (major/minor/patch).
 
 .PHONY: publish
 publish: ## Publish as a git version tag.
+	@$(ECHO_DO) "Publishing version..."
 	$(NPM_PUBLISH_GIT)
+	@$(ECHO_DONE)
 
 
 .PHONY: publish/%
 publish/%: ## Publish as given git tag.
+	@$(ECHO_DO) "Publishing tag ${*}..."
 	$(NPM_PUBLISH_GIT) --tag ${*}
-
+	@$(ECHO_DONE)
 
 .PHONY: package-json-prepare
 ifneq (node_modules,$(shell basename $(abspath ..))) # let Makefile build, or else build runs twice
