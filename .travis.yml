@@ -1,14 +1,22 @@
-sudo: false
-language:
-  - node_js
-node_js:
-  - node
 cache:
   directories:
-    - core.inc.mk
+    - /tmp/support-firecloud.cache
+    - $HOME/.local
+    - $HOME/.npm
+    - $HOME/.pip-cache/
+    - $HOME/Library/Caches/Homebrew
     - node_modules
+before_install:
+  - support-firecloud/ci/linux-nosudo/bootstrap
 install:
   - make deps
 script:
   - make
-  - make test
+
+language:
+  - node_js
+node_js:
+  - node
+
+dist: trusty
+sudo: false
