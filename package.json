@@ -10,20 +10,5 @@
   "dependencies": {
     "lodash": "4.17.4"
   },
-  "devDependencies": {
-    "babel-eslint": "7.2.3",
-    "eclint": "2.3.0",
-    "eslint": "4.1.0",
-    "eslint-config-firecloud": "git://github.com/tobiipro/eslint-config-firecloud.git#v0.0.2",
-    "eslint-plugin-async-await": "0.0.0",
-    "eslint-plugin-babel": "4.1.1",
-    "eslint-plugin-dependencies": "2.4.0",
-    "eslint-plugin-import": "2.6.0",
-    "eslint-plugin-max-len-2": "0.0.5",
-    "eslint-plugin-no-null": "1.0.2",
-    "npm-publish-git": "git://github.com/andreineculau/npm-publish-git.git#v0.0.3"
-  },
-  "scripts": {
-    "prepare": "make package-json-prepare"
-  }
+  "scripts": {}
 }
