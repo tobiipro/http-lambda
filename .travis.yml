@@ -1,3 +1,6 @@
+branches:
+  except:
+    - /^v\d+\.\d+\.\d+/
 cache:
   directories:
     - /tmp/support-firecloud.cache
