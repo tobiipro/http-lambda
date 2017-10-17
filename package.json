@@ -21,7 +21,7 @@
     "eslint-plugin-import": "2.6.0",
     "eslint-plugin-max-len-2": "0.0.5",
     "eslint-plugin-no-null": "1.0.2",
-    "npm-publish-git": "git://github.com/andreineculau/npm-publish-git.git#v0.0.3"
+    "npm-publish-git": "git://github.com/andreineculau/npm-publish-git.git#v0.0.4"
   },
   "scripts": {
     "prepare": "make package-json-prepare"
