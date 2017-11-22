@@ -149,10 +149,6 @@ exports.LambdaHttp = class LambdaHttp {
     let instance =
         `${this._ctx.invokedFunctionArn}#request:${this._ctx.awsRequestId}`;
 
-    // setTimeout(function() {
-    //   process.exit(); // eslint-disable-line no-process-exit
-    // }, 100);
-
     return {
       statusCode: 500,
       // API Gateway doesn't support statusMessage (yet)
