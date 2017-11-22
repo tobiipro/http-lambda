@@ -133,6 +133,8 @@ exports.LambdaHttp = class LambdaHttp {
     try {
       fun(this._req, this._res);
     } catch (err) {
+      this._ctx.callbackWaitsForEmptyEventLoop = false;
+
       this._next(undefined, this._options.onInternalServerError(err));
     }
   }
