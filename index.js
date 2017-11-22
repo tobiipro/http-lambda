@@ -141,6 +141,8 @@ exports.LambdaHttp = class LambdaHttp {
 
   _onUncaughtException(err) { // eslint-disable-line class-methods-use-this
     console.error(err);
+
+    // default behavior for new nodejs is to process.exit
     process.nextTick(function() {
       process.exit(1); // eslint-disable-line no-process-exit
     });
