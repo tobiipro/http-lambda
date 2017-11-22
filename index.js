@@ -238,6 +238,7 @@ exports.ServerResponse = class ServerResponse extends http.ServerResponse {
   end(data, encoding) {
     super.end(data, encoding);
     this._next(undefined, {
+      isBase64Encoded: true,
       statusCode: this.statusCode,
       // API Gateway doesn't support statusMessage (yet)
       // statusMessage: this.statusMessage,
@@ -250,8 +251,8 @@ exports.ServerResponse = class ServerResponse extends http.ServerResponse {
 
         return header;
       }),
-      body: this._body.toString()
-      // body: this._contentLength ? this._body.toString() : undefined // FIXME
+      body: Buffer.from(this._body).toString('base64')
+      // body: this._contentLength ? Buffer.from(this._body).toString('base64') : undefined // FIXME
     });
   }
 
