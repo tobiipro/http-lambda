@@ -134,10 +134,6 @@ exports.LambdaHttp = class LambdaHttp {
       fun(this._req, this._res);
     } catch (err) {
       this._next(undefined, this._options.onInternalServerError(err));
-
-      setTimeout(function() {
-        process.exit(); // eslint-disable-line no-process-exit
-      }, 100);
     }
   }
 
@@ -151,7 +147,12 @@ exports.LambdaHttp = class LambdaHttp {
   _onInternalServerError(err) {
     console.error(err);
     let instance =
-          `${this._ctx.invokedFunctionArn}#request:${this._ctx.awsRequestId}`;
+        `${this._ctx.invokedFunctionArn}#request:${this._ctx.awsRequestId}`;
+
+    // setTimeout(function() {
+    //   process.exit(); // eslint-disable-line no-process-exit
+    // }, 100);
+
     return {
       statusCode: 500,
       // API Gateway doesn't support statusMessage (yet)
