@@ -118,6 +118,7 @@ exports.LambdaHttp = class LambdaHttp {
     this._req = new exports.IncomingMessage(this._connection, e, ctx);
     this._res = new exports.ServerResponse(this._req, ctx, function() {
       process.removeListener('uncaughtException', options.onUncaughtException);
+      // eslint-disable-next-line fp/no-arguments
       next(...arguments);
     });
 
@@ -140,15 +141,18 @@ exports.LambdaHttp = class LambdaHttp {
   }
 
   _onUncaughtException(err) { // eslint-disable-line class-methods-use-this
+    // eslint-disable-next-line no-console
     console.error(err);
 
     // default behavior for new nodejs is to process.exit
     process.nextTick(function() {
-      process.exit(1); // eslint-disable-line no-process-exit
+      // eslint-disable-next-line no-process-exit
+      process.exit(1);
     });
   }
 
   _onInternalServerError(err) {
+    // eslint-disable-next-line no-console
     console.error(err);
     let instance =
         `${this._ctx.invokedFunctionArn}#request:${this._ctx.awsRequestId}`;
@@ -212,7 +216,8 @@ exports.ServerResponse = class ServerResponse extends http.ServerResponse {
       'end',
       'writeHead'
     ], (method) => {
-      this[method] = this.__proto__[method].bind(this); // eslint-disable-line no-proto
+      // eslint-disable-next-line no-proto
+      this[method] = this.__proto__[method].bind(this);
     });
   }
 
