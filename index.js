@@ -15,7 +15,7 @@
 // limitations under the License.
 // /////////////////////////////////////////////////////////////////////////////
 
-let _ = require('lodash-firecloud');
+let _ = require('lodash-firecloud').default;
 let http = require('http');
 let querystring = require('querystring');
 
