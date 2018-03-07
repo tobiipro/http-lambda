@@ -15,7 +15,7 @@ notifications:
 branches:
   except:
     - /^f\// # feature branches require PR
-    - /^v\d+\.\d+\.\d+$/ # npm-publish-tag
+    - /^v\d+\.\d+\.\d+$/ # npm-publish-git
 
 # 4. Bootstrap
 os: linux
