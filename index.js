@@ -267,13 +267,12 @@ exports.ServerResponse = class ServerResponse extends http.ServerResponse {
   }
 };
 
-exports.httpLambda = function(fn, options) {
-  return function(...args) {
+exports.httpLambda = function(lambdaHandler, options) {
+  return function(e, ctx, next) {
     try {
-      let lambdaHttp = new exports.LambdaHttp(...args, options);
-      fn(lambdaHttp, ...args);
+      let lambdaHttp = new exports.LambdaHttp(e, ctx, next, options);
+      return lambdaHandler(lambdaHttp, e, ctx, next);
     } catch (err) {
-      let [,, next] = args;
       return next(err);
     }
   };
