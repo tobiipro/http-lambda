@@ -41,6 +41,10 @@ The `httpLambda` functions takes a second argument, an `options` object:
 
 By default, `httpLambda` will log the exception via `console.log` and crash the process.
 
+### `options.onUnhandledRejection` = Function
+
+By default, `httpLambda` will log the rejection and the promise via `console.log` and crash the process.
+
 ### `options.onInternalServerError` = Function
 
 By default, `httpLambda` will reply with `500 Internal Server Error`

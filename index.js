@@ -81,6 +81,7 @@ exports.LambdaHttp = class LambdaHttp {
   constructor(e = {}, ctx = {}, next = _.noop, options = {}) {
     _.defaultsDeep(options, {
       onUncaughtException: this._onUncaughtException.bind(this),
+      onUnhandledRejection: this._onUnhandledRejection.bind(this),
       onInternalServerError: this._onInternalServerError.bind(this)
     });
 
@@ -111,6 +112,7 @@ exports.LambdaHttp = class LambdaHttp {
     this._options = options;
 
     process.on('uncaughtException', options.onUncaughtException);
+    process.on('unhandledRejection', options.onUnhandledRejection);
 
     this._connection = {
       destroy: _.noop
@@ -118,6 +120,7 @@ exports.LambdaHttp = class LambdaHttp {
     this._req = new exports.IncomingMessage(this._connection, e, ctx);
     this._res = new exports.ServerResponse(this._req, ctx, function() {
       process.removeListener('uncaughtException', options.onUncaughtException);
+      process.removeListener('unhandledRejection', options.onUnhandledRejection);
       // eslint-disable-next-line fp/no-arguments
       next(...arguments);
     });
@@ -145,6 +148,20 @@ exports.LambdaHttp = class LambdaHttp {
 
     // eslint-disable-next-line no-console
     console.error(err);
+
+    // default behavior for nodejs is to process.exit
+    process.nextTick(function() {
+      // eslint-disable-next-line no-process-exit
+      process.exit(1);
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  _onUnhandledRejection(reason, p) {
+    this._ctx.callbackWaitsForEmptyEventLoop = false;
+
+    // eslint-disable-next-line no-console
+    console.error(reason, p);
 
     // default behavior for new nodejs is to process.exit
     process.nextTick(function() {
