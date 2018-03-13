@@ -32,23 +32,19 @@ exports.handle = httpLambda(function(http, e, ctx, _next) {
 });
 ```
 
+
 ## Configuration
 
 The `httpLambda` functions takes a second argument, an `options` object:
 
-### `options.ignoreUncaughtException` = Boolean
-
-By default, `httpLambda` will call `options.onUncaughtException`,
-in order to respond with a HTTP error.
-
 ### `options.onUncaughtException` = Function
 
-By default, `httpLambda` will log the exception via `console.log`.
+By default, `httpLambda` will log the exception via `console.log` and crash the process.
 
 ### `options.onInternalServerError` = Function
 
 By default, `httpLambda` will reply with `500 Internal Server Error`
-and a `application/problem+json` content if the lambda crashes.
+and a `application/problem+json` content, if the lambda handler crashes.
 
 
 ## A word on https://github.com/awslabs/aws-serverless-express
@@ -73,7 +69,7 @@ AWS' solution is somewhat more abstract, but on the other hand more comvoluted a
 - it then parses the just-built HTTP request message
 - builds the expected lambda callback signature
 
-This solution consists of:
+The `http-lambda` solution consists of:
 - extending Node.js http.IncomingMessage to handle the lambda event signature
 - extending Node.js http.ServerResponse to produce the lamba callback signature
 - provide a reference to a `http`-like module that can be used with e.g. `express`
@@ -81,12 +77,16 @@ This solution consists of:
 Performance tests comparing the two haven't been performed yet,
 though a guestimate would be the Tobii solution uses less CPU/memory.
 
+In addition, calling `context.getRemainingTimeInMillis()` is still possible
+in `http-lambda`, but not in `aws-serverless-express`.
+
 The advantage with the AWS solution is that it works more as a CGI, so in theory
 one could call any executable from Node.js, written in any language, tell it to
 listen on the UNIX socket, handle the HTTP request, respond and exit.
 Given the AWS lambda limitations, especially when running behind AWS API Gateway,
-which has a 20s timeout, a faster solution is probably to pipe JSON signatures
-in (lambda event and context) and out (lambda callback).
+which has a maximum of 29s (not a typo, 30 minus 1 seconds... ?!) timeout,
+a faster solution is probably to pipe JSON signatures in (lambda event and context)
+and out (lambda callback), and shortcircuit the parsing/generation of HTTP messages.
 
 
 ## License
