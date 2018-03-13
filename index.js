@@ -130,17 +130,19 @@ exports.LambdaHttp = class LambdaHttp {
     return this;
   }
 
-  createServer(fun) {
+  createServer(requestListener) {
+    // we simulate that a HTTP request was received as soon as the server was created
     try {
-      fun(this._req, this._res);
+      requestListener(this._req, this._res);
     } catch (err) {
-      this._ctx.callbackWaitsForEmptyEventLoop = false;
-
-      this._next(undefined, this._options.onInternalServerError(err));
+      this._options.onInternalServerError(err);
     }
   }
 
-  _onUncaughtException(err) { // eslint-disable-line class-methods-use-this
+  // eslint-disable-next-line class-methods-use-this
+  _onUncaughtException(err) {
+    this._ctx.callbackWaitsForEmptyEventLoop = false;
+
     // eslint-disable-next-line no-console
     console.error(err);
 
@@ -152,26 +154,31 @@ exports.LambdaHttp = class LambdaHttp {
   }
 
   _onInternalServerError(err) {
+    this._ctx.callbackWaitsForEmptyEventLoop = false;
+
     // eslint-disable-next-line no-console
     console.error(err);
-    let instance =
-        `${this._ctx.invokedFunctionArn}#request:${this._ctx.awsRequestId}`;
 
-    return {
-      statusCode: 500,
+    let statusCode = 500;
+
+    this._next(undefined, {
+      statusCode,
+
       // API Gateway doesn't support statusMessage (yet)
-      // statusMessage: http.STATUS_CODES[500]
+      // statusMessage: http.STATUS_CODES[statusCode]
+
       headers: {
         'content-type': 'application/problem+json'
       },
+
       body: JSON.stringify({
         type: 'about:blank',
-        title: 'Internal Server Error',
-        status: 500,
-        instance,
+        title: http.STATUS_CODES[statusCode],
+        status: statusCode,
+        instance: `${this._ctx.invokedFunctionArn}#request:${this._ctx.awsRequestId}`,
         renderer: 'lambda-http'
       })
-    };
+    });
   }
 };
 
@@ -236,27 +243,36 @@ exports.ServerResponse = class ServerResponse extends http.ServerResponse {
     }
   }
 
-  addTrailers(_headers) { // eslint-disable-line class-methods-use-this
+  // eslint-disable-next-line class-methods-use-this
+  addTrailers(_headers) {
     // not supported
   }
 
   end(data, encoding) {
     super.end(data, encoding);
+
+    // API Gateway doesn't support multiple headers (yet)
+    // case #1951724541
+    let headers = _.mapValues(this._headers, function(header) {
+      // NOTE this is a very naïve "solution" since the semantics are header based,
+      // while here we assume that all the values of a header MUST be joined by a comma
+      if (_.isArray(header)) {
+        header = header.join(', ');
+      }
+
+      return header;
+    });
+
+    let body = this._body.toString();
+    // FIXME
+    // body = this._contentLength ? body : undefined;
+
     this._next(undefined, {
       statusCode: this.statusCode,
       // API Gateway doesn't support statusMessage (yet)
-      // statusMessage: this.statusMessage,
-      // API Gateway doesn't support multiple headers (yet)
-      // case #1951724541
-      headers: _.mapValues(this._headers, function(header) {
-        if (_.isArray(header)) {
-          header = header.join(', ');
-        }
-
-        return header;
-      }),
-      body: this._body.toString()
-      // body: this._contentLength ? this._body.toString() : undefined // FIXME
+      // statusMessage: this.statusMessage || http.STATUS_CODES[this.statusCode],
+      headers,
+      body
     });
   }
 
