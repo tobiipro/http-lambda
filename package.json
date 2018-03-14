@@ -13,26 +13,5 @@
   "dependencies": {
     "lodash-firecloud": "git://github.com/tobiipro/lodash-firecloud.git#semver:~0.1.0"
   },
-  "devDependencies": {
-    "babel-eslint": "^7.2.3",
-    "eclint": "^2.6.0",
-    "eslint": "^4.18.2",
-    "eslint-config-firecloud": "git://github.com/tobiipro/eslint-config-firecloud.git#semver:~0.1.1",
-    "eslint-plugin-async-await": "^0.0.0",
-    "eslint-plugin-babel": "^4.1.2",
-    "eslint-plugin-better": "^0.1.5",
-    "eslint-plugin-dependencies": "^2.4.0",
-    "eslint-plugin-firecloud": "git://github.com/tobiipro/eslint-plugin-firecloud.git#semver:~0.1.0",
-    "eslint-plugin-fp": "^2.3.0",
-    "eslint-plugin-import": "^2.9.0",
-    "eslint-plugin-jest": "^21.13.0",
-    "eslint-plugin-lodash": "^2.6.1",
-    "eslint-plugin-max-len-2": "^0.0.5",
-    "eslint-plugin-mocha": "^4.12.1",
-    "eslint-plugin-no-null": "^1.0.2",
-    "npm-publish-git": "git://github.com/andreineculau/npm-publish-git.git#semver:~0.0.7"
-  },
-  "scripts": {
-    "prepare": "make package-json-prepare"
-  }
+  "scripts": {}
 }
