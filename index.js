@@ -135,67 +135,27 @@ exports.LambdaHttp = class LambdaHttp {
 
   createServer(requestListener) {
     // we simulate that a HTTP request was received as soon as the server was created
-    try {
-      requestListener(this._req, this._res);
-    } catch (err) {
-      this._options.onInternalServerError(err);
-    }
+    requestListener(this._req, this._res);
   }
 
   // eslint-disable-next-line class-methods-use-this
   _onUncaughtException(err) {
-    this._ctx.callbackWaitsForEmptyEventLoop = false;
-
     // eslint-disable-next-line no-console
     console.error(err);
 
-    // default behavior for nodejs is to process.exit
-    process.nextTick(function() {
-      // eslint-disable-next-line no-process-exit
-      process.exit(1);
-    });
+    this.onInternalServerError();
   }
 
   // eslint-disable-next-line class-methods-use-this
   _onUnhandledRejection(reason, p) {
-    this._ctx.callbackWaitsForEmptyEventLoop = false;
-
     // eslint-disable-next-line no-console
     console.error(reason, p);
 
-    // default behavior for new nodejs is to process.exit
-    process.nextTick(function() {
-      // eslint-disable-next-line no-process-exit
-      process.exit(1);
-    });
+    this.onInternalServerError();
   }
 
-  _onInternalServerError(err) {
-    this._ctx.callbackWaitsForEmptyEventLoop = false;
-
-    // eslint-disable-next-line no-console
-    console.error(err);
-
-    let statusCode = 500;
-
-    this._next(undefined, {
-      statusCode,
-
-      // API Gateway doesn't support statusMessage (yet)
-      // statusMessage: http.STATUS_CODES[statusCode]
-
-      headers: {
-        'content-type': 'application/problem+json'
-      },
-
-      body: JSON.stringify({
-        type: 'about:blank',
-        title: http.STATUS_CODES[statusCode],
-        status: statusCode,
-        instance: `${this._ctx.invokedFunctionArn}#request:${this._ctx.awsRequestId}`,
-        renderer: 'lambda-http'
-      })
-    });
+  _onInternalServerError() {
+    process.exit(1);
   }
 };
 
@@ -302,11 +262,7 @@ exports.ServerResponse = class ServerResponse extends http.ServerResponse {
 
 exports.httpLambda = function(lambdaHandler, options) {
   return function(e, ctx, next) {
-    try {
-      let lambdaHttp = new exports.LambdaHttp(e, ctx, next, options);
-      return lambdaHandler(lambdaHttp, e, ctx, next);
-    } catch (err) {
-      return next(err);
-    }
+    let lambdaHttp = new exports.LambdaHttp(e, ctx, next, options);
+    lambdaHandler(lambdaHttp, e, ctx, next);
   };
 };

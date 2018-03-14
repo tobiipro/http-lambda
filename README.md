@@ -51,6 +51,41 @@ By default, `httpLambda` will reply with `500 Internal Server Error`
 and a `application/problem+json` content, if the lambda handler crashes.
 
 
+## Random observations
+
+We would have liked to control the HTTP response in `onInternalServerError` e.g. reply with `500` instead of `502`,
+but that is not possible without risking a clean state.
+
+The current poor design can be exemplified as follows:
+
+* `next(new Error('test'))` = state will be frozen,
+  API gateway will reply with `502 Bad Gateway` and `{"message": "Internal server error"}`.
+  Error details are lost.
+* `next(new Error('test', {statusCode: 200}))` = state will be frozen,
+  API gateway will reply with `502 Bad Gateway` and `{"message": "Internal server error"}`.
+  Error details and intended response are lost.
+* `next(undefined, {statusCode: 200}); process.exit()` = process will crash,
+  API gateway will reply with `502 Bad Gateway` and `{"message": "Internal server error"}`.
+  Lambda logs will show `Process exited before completing request`.
+  Intended response is lost.
+* `next(undefined, {statusCode: 200}); process.nextTick(function() {process.exit()})` = process will crash,
+  API gateway will reply with `502 Bad Gateway` and `{"message": "Internal server error"}`.
+  Lambda logs will show `Process exited before completing request`.
+  Intended response is lost.
+* `next(undefined, {statusCode: 200}); setImmediate(function() {process.exit()})` = process will crash,
+  API gateway will reply with `502 Bad Gateway` and `{"message": "Internal server error"}`.
+  Lambda logs will show `Process exited before completing request`.
+  Intended response is lost.
+* `next(undefined, {statusCode: 200}); setTimeout(function() {process.exit()}, 1000)` = process will crash,
+  API gateway will reply with `502 Bad Gateway` and `{"message": "Internal server error"}`.
+  Lambda logs will show `Process exited before completing request`.
+  Intended response is lost.
+
+Setting `ctxcallbackWaitsForEmptyEventLoop = false` is only making things more confusing,
+as you will **always** manage to reply with e.g. 200 (like in the example above) once,
+and `502` on the next request (when state will be unfrozen, and the first event on the loop is `process.exit()`).
+
+
 ## A word on https://github.com/awslabs/aws-serverless-express
 
 `http-lambda` is an effort of Tobii's Cloud Services that had its first commit
