@@ -78,6 +78,7 @@ let querystring = require('querystring');
 */
 
 exports.LambdaHttp = class LambdaHttp {
+  // eslint-disable-next-line max-params
   constructor(e = {}, ctx = {}, next = _.noop, options = {}) {
     _.defaultsDeep(options, {
       onUncaughtException: this._onUncaughtException.bind(this),
@@ -102,7 +103,9 @@ exports.LambdaHttp = class LambdaHttp {
     _.defaultsDeep(ctx, {
       env: e.stageVariables,
       requestContext: e.requestContext
-    }, {
+    });
+
+    _.defaultsDeep(ctx, {
       env: process.env
     });
 
@@ -154,12 +157,15 @@ exports.LambdaHttp = class LambdaHttp {
     this.onInternalServerError();
   }
 
+  // eslint-disable-next-line class-methods-use-this
   _onInternalServerError() {
+    // eslint-disable-next-line no-process-exit
     process.exit(1);
   }
 };
 
 exports.IncomingMessage = class IncomingMessage extends http.IncomingMessage {
+  // eslint-disable-next-line max-params
   constructor(socket, e, ctx) {
     super(socket);
     this.httpVersionMajor = 1;
@@ -186,6 +192,7 @@ exports.IncomingMessage = class IncomingMessage extends http.IncomingMessage {
 };
 
 exports.ServerResponse = class ServerResponse extends http.ServerResponse {
+  // eslint-disable-next-line max-params
   constructor(req, ctx, next) {
     super(req);
     this._body = Buffer.from('');
@@ -205,6 +212,7 @@ exports.ServerResponse = class ServerResponse extends http.ServerResponse {
     });
   }
 
+  // eslint-disable-next-line max-params
   _writeRaw(data, encoding, _callback) {
     if (_.isFunction(encoding)) {
       _callback = encoding;
@@ -253,6 +261,7 @@ exports.ServerResponse = class ServerResponse extends http.ServerResponse {
     });
   }
 
+  // eslint-disable-next-line max-params
   writeHead(statusCode, reason, obj) {
     super.writeHead(statusCode, reason, obj);
     // we want this._body to be just the body on this.end
@@ -261,6 +270,7 @@ exports.ServerResponse = class ServerResponse extends http.ServerResponse {
 };
 
 exports.httpLambda = function(lambdaHandler, options) {
+  // eslint-disable-next-line max-params
   return function(e, ctx, next) {
     let lambdaHttp = new exports.LambdaHttp(e, ctx, next, options);
     lambdaHandler(lambdaHttp, e, ctx, next);
