@@ -39,24 +39,25 @@ The `httpLambda` functions takes a second argument, an `options` object:
 
 ### `options.onUncaughtException` = Function
 
-By default, `httpLambda` will log the exception via `console.log` and crash the process.
+By default, `http-lambda` will log the exception via `console.log`
+and crash the process (via the `onInternalServerError` callback).
 
 ### `options.onUnhandledRejection` = Function
 
-By default, `httpLambda` will log the rejection and the promise via `console.log` and crash the process.
+By default, `http-lambda` will log the rejection via `console.log`
+and crash the process (via the `onInternalServerError` callback).
 
 ### `options.onInternalServerError` = Function
 
-By default, `httpLambda` will reply with `500 Internal Server Error`
-and a `application/problem+json` content, if the lambda handler crashes.
+By default, `http-lambda` will crash the process.
 
 
 ## Random observations
 
 We would have liked to control the HTTP response in `onInternalServerError` e.g. reply with `500` instead of `502`,
-but that is not possible without risking a clean state.
+but that is not possible without risking a dirty state.
 
-The current poor design can be exemplified as follows:
+The current (poor I might add) design can be exemplified as follows:
 
 * `next(new Error('test'))` = state will be frozen,
   API gateway will reply with `502 Bad Gateway` and `{"message": "Internal server error"}`.
