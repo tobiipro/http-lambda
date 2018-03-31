@@ -12,7 +12,7 @@ within an AWS Lambda the same way you would write an HTTP server.
 
 ```javascript
 import express from 'express';
-import {httpLambda} from 'lambda-http';
+import {httpLambda} from 'http-lambda';
 
 exports.handle = httpLambda(function(http, e, ctx, _next) {
   http.log.trace({
