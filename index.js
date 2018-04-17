@@ -185,7 +185,7 @@ exports.IncomingMessage = class IncomingMessage extends http.IncomingMessage {
     this.headers = _.mapKeys(this.headers, function(_value, key) {
       return _.toLower(key);
     });
-    this.headers['content-length'] = (e.body || '').length;
+    this.headers['content-length'] = (e.body || '').length.toString();
     this.body = e.body;
     this.ctx = ctx;
   }
