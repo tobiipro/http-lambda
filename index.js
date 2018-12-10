@@ -15,6 +15,8 @@
 // limitations under the License.
 // /////////////////////////////////////////////////////////////////////////////
 
+/* eslint-disable max-classes-per-file */
+
 let _ = require('lodash-firecloud').default;
 let http = require('http');
 let querystring = require('querystring');
