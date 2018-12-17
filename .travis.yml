@@ -1,3 +1,16 @@
+# 0. Misc
+matrix:
+  include:
+    - name: "Node.js 8.10"
+      language: node_js
+      node_js: "8.10"
+      env: CACHE_NAME=node-8.10
+
+    - name: "Node.js latest"
+      language: node_js
+      node_js: node
+      env: CACHE_NAME=node
+
 # 1. Notifications
 notifications:
   slack:
@@ -22,7 +35,6 @@ branches:
 # 4. Bootstrap
 os: linux
 dist: xenial
-language: generic
 # addons:
 before_cache: ./.travis.sh before_cache
 cache:
