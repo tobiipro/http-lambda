@@ -1,4 +1,5 @@
 let _ = require('lodash-firecloud').default;
+let originalHttp = require('http');
 
 let {
   LambdaHttp
@@ -69,5 +70,16 @@ describe('instance of LambdaHttp', function() {
       expect(res.ctx.requestContext).toEqual(e.requestContext);
       res.end();
     });
+  });
+
+  it('exposes http.METHODS and http.STATUS_CODES', function() {
+    let e = {};
+    let ctx = {};
+
+    let http = new LambdaHttp(e, ctx, _.noop);
+    // eslint-disable-next-line jest/prefer-strict-equal
+    expect(http.METHODS).toEqual(originalHttp.METHODS);
+    // eslint-disable-next-line jest/prefer-strict-equal
+    expect(http.STATUS_CODES).toEqual(originalHttp.STATUS_CODES);
   });
 });
