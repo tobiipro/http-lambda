@@ -24,4 +24,28 @@ describe('instance of LambdaHttp', function() {
       res.end();
     });
   });
+
+  it('merges stagesVariables and process.env vars in ctx.env', function(done) {
+    let e = {
+      stageVariables: {
+        PATH: 'true'
+      }
+    };
+    let ctx = {};
+
+    let cb = function(_err, _jsonRes) {
+      done();
+    };
+
+    let http = new LambdaHttp(e, ctx, cb);
+    http.createServer(function(req, res) {
+      let ctxEnv = _.defaultsDeep({}, e.stageVariables, process.env);
+
+      // eslint-disable-next-line jest/prefer-strict-equal
+      expect(req.ctx.env).toEqual(ctxEnv);
+      // eslint-disable-next-line jest/prefer-strict-equal
+      expect(res.ctx.env).toEqual(ctxEnv);
+      res.end();
+    });
+  });
 });
