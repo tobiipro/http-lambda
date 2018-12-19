@@ -26,8 +26,7 @@ describe('instance of ServerResponse', function() {
     let req = new IncomingMessage(connection, e, ctx);
     let res = new ServerResponse(req, ctx, function(_err, jsonRes) {
       expect(jsonRes.statusCode).toBe(200);
-      // eslint-disable-next-line jest/prefer-strict-equal
-      expect(jsonRes.headers).toEqual({});
+      expect(jsonRes.headers).toStrictEqual({});
       expect(jsonRes.body).toBe('');
 
       done();
@@ -70,8 +69,7 @@ describe('instance of ServerResponse', function() {
         }
         value = _.toString(value);
 
-        // eslint-disable-next-line jest/prefer-strict-equal
-        expect(jsonRes.headers[name]).toEqual(value);
+        expect(jsonRes.headers[name]).toStrictEqual(value);
       });
 
       done();
@@ -96,12 +94,10 @@ describe('instance of ServerResponse', function() {
     let req = new IncomingMessage(connection, e, ctx);
     let res = new ServerResponse(req, ctx, function(_err, jsonRes) {
       _.forEach(_.merge({}, headers, writeHeaders), function(value, name) {
-        // eslint-disable-next-line jest/prefer-strict-equal
-        expect(jsonRes.headers[name]).toEqual(value);
+        expect(jsonRes.headers[name]).toStrictEqual(value);
       });
 
-      // eslint-disable-next-line jest/prefer-strict-equal
-      expect(jsonRes.headers.dynamic).toEqual('baz');
+      expect(jsonRes.headers.dynamic).toStrictEqual('baz');
 
       done();
     });
@@ -119,8 +115,7 @@ describe('instance of ServerResponse', function() {
 
     let req = new IncomingMessage(connection, e, ctx);
     let res = new ServerResponse(req, ctx, function(_err, jsonRes) {
-      // eslint-disable-next-line jest/prefer-strict-equal
-      expect(jsonRes.body).toEqual(body);
+      expect(jsonRes.body).toStrictEqual(body);
 
       done();
     });
@@ -134,8 +129,7 @@ describe('instance of ServerResponse', function() {
 
     let req = new IncomingMessage(connection, e, ctx);
     let res = new ServerResponse(req, ctx, function(_err, jsonRes) {
-      // eslint-disable-next-line jest/prefer-strict-equal
-      expect(jsonRes.body).toEqual(_.toString(body));
+      expect(jsonRes.body).toStrictEqual(_.toString(body));
 
       done();
     });

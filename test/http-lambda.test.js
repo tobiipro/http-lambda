@@ -12,8 +12,7 @@ describe('httpLambda', function() {
 
     let cb = function(_err, jsonRes) {
       expect(jsonRes.statusCode).toBe(200);
-      // eslint-disable-next-line jest/prefer-strict-equal
-      expect(jsonRes.headers).toEqual({});
+      expect(jsonRes.headers).toStrictEqual({});
       expect(jsonRes.body).toBe('');
 
       done();

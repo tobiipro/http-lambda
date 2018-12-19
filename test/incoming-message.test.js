@@ -59,8 +59,7 @@ describe('instance of IncomingMessage', function() {
     };
 
     let req = new IncomingMessage(connection, e, ctx);
-    // eslint-disable-next-line jest/prefer-strict-equal
-    expect(req.headers).toEqual({
+    expect(req.headers).toStrictEqual({
       'content-length': '0',
       foo: '123',
       bar: [
@@ -77,8 +76,7 @@ describe('instance of IncomingMessage', function() {
     };
 
     let req = new IncomingMessage(connection, e, ctx);
-    // eslint-disable-next-line jest/prefer-strict-equal
-    expect(req.headers).toEqual({
+    expect(req.headers).toStrictEqual({
       'content-length': '1'
     });
   });

@@ -13,8 +13,7 @@ describe('instance of LambdaHttp', function() {
 
     let cb = function(_err, jsonRes) {
       expect(jsonRes.statusCode).toBe(200);
-      // eslint-disable-next-line jest/prefer-strict-equal
-      expect(jsonRes.headers).toEqual({});
+      expect(jsonRes.headers).toStrictEqual({});
       expect(jsonRes.body).toBe('');
 
       done();
@@ -42,10 +41,8 @@ describe('instance of LambdaHttp', function() {
     http.createServer(function(req, res) {
       let ctxEnv = _.defaultsDeep({}, e.stageVariables, process.env);
 
-      // eslint-disable-next-line jest/prefer-strict-equal
-      expect(req.ctx.env).toEqual(ctxEnv);
-      // eslint-disable-next-line jest/prefer-strict-equal
-      expect(res.ctx.env).toEqual(ctxEnv);
+      expect(req.ctx.env).toStrictEqual(ctxEnv);
+      expect(res.ctx.env).toStrictEqual(ctxEnv);
       res.end();
     });
   });
@@ -64,10 +61,8 @@ describe('instance of LambdaHttp', function() {
 
     let http = new LambdaHttp(e, ctx, cb);
     http.createServer(function(req, res) {
-      // eslint-disable-next-line jest/prefer-strict-equal
-      expect(req.ctx.requestContext).toEqual(e.requestContext);
-      // eslint-disable-next-line jest/prefer-strict-equal
-      expect(res.ctx.requestContext).toEqual(e.requestContext);
+      expect(req.ctx.requestContext).toStrictEqual(e.requestContext);
+      expect(res.ctx.requestContext).toStrictEqual(e.requestContext);
       res.end();
     });
   });
@@ -77,9 +72,7 @@ describe('instance of LambdaHttp', function() {
     let ctx = {};
 
     let http = new LambdaHttp(e, ctx, _.noop);
-    // eslint-disable-next-line jest/prefer-strict-equal
-    expect(http.METHODS).toEqual(originalHttp.METHODS);
-    // eslint-disable-next-line jest/prefer-strict-equal
-    expect(http.STATUS_CODES).toEqual(originalHttp.STATUS_CODES);
+    expect(http.METHODS).toStrictEqual(originalHttp.METHODS);
+    expect(http.STATUS_CODES).toStrictEqual(originalHttp.STATUS_CODES);
   });
 });
