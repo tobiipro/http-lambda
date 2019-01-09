@@ -187,7 +187,7 @@ exports.IncomingMessage = class IncomingMessage extends http.IncomingMessage {
     this.headers = _.mapKeys(this.headers, function(_value, key) {
       return _.toLower(key);
     });
-    this.headers['content-length'] = (e.body || '').length.toString();
+    this.headers['content-length'] = _.toString((e.body || '').length);
     this.body = e.body;
     this.ctx = ctx;
   }
@@ -247,10 +247,10 @@ exports.ServerResponse = class ServerResponse extends http.ServerResponse {
         header = header.join(', ');
       }
 
-      return header;
+      return _.toString(header);
     });
 
-    let body = this._body.toString();
+    let body = _.toString(this._body);
     // FIXME
     // body = this._contentLength ? body : undefined;
 

@@ -28,9 +28,9 @@ notifications:
 # 3. Git
 # git:
 branches:
-  except:
-    - /^f\// # feature branches require PR
-    - /^v\d+\.\d+\.\d+$/ # npm-publish-git
+  only:
+    - master
+    - /^v(\d+)\.(\d+)\.(\d+)$/ # version tags
 
 # 4. Bootstrap
 os: linux
