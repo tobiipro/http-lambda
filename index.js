@@ -222,9 +222,15 @@ exports.ServerResponse = class ServerResponse extends http.ServerResponse {
     }
 
     if (_.isBuffer(data)) {
-      this._body = Buffer.concat([this._body, data]);
+      this._body = Buffer.concat([
+        this._body,
+        data
+      ]);
     } else if (_.isString(data)) {
-      this._body = Buffer.concat([this._body, Buffer.from(data, encoding)]);
+      this._body = Buffer.concat([
+        this._body,
+        Buffer.from(data, encoding)
+      ]);
     } else {
       throw new Error('ServerResponse._writeRaw expects Buffer or string');
     }
