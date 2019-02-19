@@ -32,6 +32,11 @@ exports.handle = httpLambda(function(http, e, ctx, _next) {
 });
 ```
 
+Support for binary responses as described
+[here](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html)
+exists and is triggered by writing response data with 'binary' encoding e.g. `res.end(binaryData, 'binary')`.
+Remember that API Gateway also needs to be configured to treat the response media-type as binary.
+
 
 ## Configuration
 

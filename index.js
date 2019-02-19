@@ -188,7 +188,8 @@ exports.IncomingMessage = class IncomingMessage extends http.IncomingMessage {
       return _.toLower(key);
     });
     this.headers['content-length'] = _.toString((e.body || '').length);
-    this.body = e.body;
+    // see https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
+    this.body = e.isBase64Encoded ? Buffer.from(e.body, 'base64') : e.body;
     this.ctx = ctx;
   }
 };
@@ -201,6 +202,7 @@ exports.ServerResponse = class ServerResponse extends http.ServerResponse {
 
     this.ctx = ctx;
     this._next = next;
+    this._isBinary = false;
 
     // NOTE express sets the __proto__ to http.ServerResponse
     _.forEach([
@@ -219,6 +221,11 @@ exports.ServerResponse = class ServerResponse extends http.ServerResponse {
     if (_.isFunction(encoding)) {
       _callback = encoding;
       encoding = undefined;
+    }
+
+    // see https://nodejs.org/api/buffer.html#buffer_buffers_and_character_encodings
+    if (encoding === 'binary') {
+      this._isBinary = true;
     }
 
     if (_.isBuffer(data)) {
@@ -256,11 +263,13 @@ exports.ServerResponse = class ServerResponse extends http.ServerResponse {
       return _.toString(header);
     });
 
-    let body = _.toString(this._body);
+    let body = this._body.toString(this._isBinary ? 'base64' : undefined);
     // FIXME
     // body = this._contentLength ? body : undefined;
 
     this._next(undefined, {
+      // see https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
+      isBase64Encoded: this._isBinary,
       statusCode: this.statusCode,
       // API Gateway doesn't support statusMessage (yet)
       // statusMessage: this.statusMessage || http.STATUS_CODES[this.statusCode],
