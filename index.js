@@ -116,6 +116,7 @@ exports.LambdaHttp = class LambdaHttp {
     this._next = next;
     this._options = options;
 
+    this.onInternalServerError = options.onInternalServerError;
     process.on('uncaughtException', options.onUncaughtException);
     process.on('unhandledRejection', options.onUnhandledRejection);
 
