@@ -29,7 +29,7 @@
     "eslint-plugin-max-len-2": "^0.0.5",
     "eslint-plugin-mocha": "^5.2.0",
     "eslint-plugin-no-null": "^1.0.2",
-    "jest": "^23.6.0",
+    "jest": "^24.1.0",
     "npm-publish-git": "git://github.com/andreineculau/npm-publish-git.git#semver:~0.0.8"
   },
   "scripts": {
