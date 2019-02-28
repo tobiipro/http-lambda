@@ -72,7 +72,9 @@ describe('instance of LambdaHttp', function() {
     let ctx = {};
 
     let http = new LambdaHttp(e, ctx, _.noop);
-    expect(http.METHODS).toStrictEqual(originalHttp.METHODS);
-    expect(http.STATUS_CODES).toStrictEqual(originalHttp.STATUS_CODES);
+    // eslint-disable-next-line jest/prefer-strict-equal
+    expect(http.METHODS).toEqual(originalHttp.METHODS);
+    // eslint-disable-next-line jest/prefer-strict-equal
+    expect(http.STATUS_CODES).toEqual(originalHttp.STATUS_CODES);
   });
 });
