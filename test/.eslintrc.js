@@ -2,6 +2,6 @@ module.exports = {
   root: false,
 
   extends: [
-    'firecloud/test-jest.js'
+    'firecloud/jest.js'
   ]
 };
