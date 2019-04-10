@@ -1,16 +1,3 @@
-# 0. Misc
-matrix:
-  include:
-    - name: "Node.js 8.10"
-      language: node_js
-      node_js: "8.10"
-      env: CACHE_NAME=node-8.10
-
-    - name: "Node.js latest"
-      language: node_js
-      node_js: node
-      env: CACHE_NAME=node
-
 # 1. Notifications
 notifications:
   slack:
@@ -62,3 +49,16 @@ after_script: ./.ci.sh after_script
 before_deploy: ./.ci.sh before_deploy
 # deploy:
 after_deploy: ./.ci.sh after_deploy
+
+
+jobs:
+  include:
+    - name: "Node.js 8.10"
+      language: node_js
+      node_js: "8.10"
+      env: CACHE_NAME=node-8.10
+
+    - name: "Node.js latest"
+      language: node_js
+      node_js: node
+      env: CACHE_NAME=node
