@@ -1,4 +1,4 @@
-let _ = require('lodash-firecloud').default;
+let _ = require('lodash-firecloud');
 
 let {
   IncomingMessage
