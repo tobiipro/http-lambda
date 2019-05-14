@@ -5,8 +5,8 @@ let {
   LambdaHttp
 } = require('../');
 
-/* eslint-disable jest/no-test-callback */
 describe('instance of LambdaHttp', function() {
+  // eslint-disable-next-line jest/no-test-callback
   it('createServer automatically returns by default with 200, no headers, and no body', function(done) {
     let e = {};
     let ctx = {};
@@ -25,6 +25,7 @@ describe('instance of LambdaHttp', function() {
     });
   });
 
+  // eslint-disable-next-line jest/no-test-callback
   it('merges stagesVariables and process.env vars in ctx.env', function(done) {
     let e = {
       stageVariables: {
@@ -47,6 +48,7 @@ describe('instance of LambdaHttp', function() {
     });
   });
 
+  // eslint-disable-next-line jest/no-test-callback
   it('makes ctx.requestContext equal to e.requestContext for convenience', function(done) {
     let e = {
       requestContext: {

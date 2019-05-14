@@ -10,7 +10,6 @@ let connection = {
 };
 let ctx = {};
 
-/* eslint-disable jest/no-test-callback */
 describe('instance of ServerResponse', function() {
   it('retains ctx', function() {
     let e = {};
@@ -20,6 +19,7 @@ describe('instance of ServerResponse', function() {
     expect(res.ctx).toBe(ctx);
   });
 
+  // eslint-disable-next-line jest/no-test-callback
   it('returns by default with 200, no headers, and no body', function(done) {
     let e = {};
 
@@ -34,6 +34,7 @@ describe('instance of ServerResponse', function() {
     res.end();
   });
 
+  // eslint-disable-next-line jest/no-test-callback
   it('can return a modified statusCode', function(done) {
     let statusCode = 201;
     let e = {};
@@ -48,6 +49,7 @@ describe('instance of ServerResponse', function() {
     res.end();
   });
 
+  // eslint-disable-next-line jest/no-test-callback
   it('can return modified headers', function(done) {
     let headers = {
       'x-array': [
@@ -80,6 +82,7 @@ describe('instance of ServerResponse', function() {
     res.end();
   });
 
+  // eslint-disable-next-line jest/no-test-callback
   it('can return modified statusCode and headers via writeHead', function(done) {
     let headers = {
       static: 'foo',
@@ -108,6 +111,7 @@ describe('instance of ServerResponse', function() {
     res.end();
   });
 
+  // eslint-disable-next-line jest/no-test-callback
   it('can return modified body (sent as string)', function(done) {
     let body = 'test';
 
@@ -122,6 +126,7 @@ describe('instance of ServerResponse', function() {
     res.end(body);
   });
 
+  // eslint-disable-next-line jest/no-test-callback
   it('can return modified body (sent as Buffer)', function(done) {
     let body = Buffer.from('test');
 

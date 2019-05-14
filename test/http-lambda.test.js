@@ -4,8 +4,8 @@ let {
   httpLambda
 } = require('../');
 
-/* eslint-disable jest/no-test-callback */
 describe('httpLambda', function() {
+  // eslint-disable-next-line jest/no-test-callback
   it('automatically returns by default with 200, no headers, and no body', function(done) {
     let e = {};
     let ctx = {};
