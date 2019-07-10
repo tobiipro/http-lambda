@@ -11,7 +11,7 @@
     "/index.js"
   ],
   "dependencies": {
-    "lodash-firecloud": "git://github.com/tobiipro/lodash-firecloud.git#semver:~0.3.0"
+    "lodash-firecloud": "git://github.com/tobiipro/lodash-firecloud.git#semver:~0.4.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
