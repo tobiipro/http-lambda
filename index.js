@@ -127,7 +127,7 @@ exports.LambdaHttp = class LambdaHttp {
     this._res = new exports.ServerResponse(this._req, ctx, function() {
       process.removeListener('uncaughtException', options.onUncaughtException);
       process.removeListener('unhandledRejection', options.onUnhandledRejection);
-      // eslint-disable-next-line fp/no-arguments
+      // eslint-disable-next-line prefer-rest-params, fp/no-arguments
       next(...arguments);
     });
 
