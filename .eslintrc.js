@@ -12,6 +12,11 @@ module.exports = {
 
     extends: [
       'firecloud/configs/typescript'
-    ]
+    ],
+
+    rules: {
+      'lodash/prefer-noop': 'off',
+      'no-dupe-class-members': 'off'
+    }
   }]
 };

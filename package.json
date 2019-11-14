@@ -13,6 +13,7 @@
     "/lib/"
   ],
   "dependencies": {
+    "@types/aws-lambda": "^8.10.35",
     "@types/node": "^12.12.6",
     "lodash-firecloud": "git://github.com/tobiipro/lodash-firecloud.git#semver:~0.5.1"
   },

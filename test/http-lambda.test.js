@@ -5,8 +5,8 @@ import {
 } from '../src';
 
 describe('httpLambda', function() {
-  // eslint-disable-next-line jest/no-test-callback
-  it('automatically returns by default with 200, no headers, and no body', function(done) {
+  it('automatically returns by default with 200, no headers, and no body', async function() {
+    let d = _.deferred();
     let e = {};
     let ctx = {};
 
@@ -15,15 +15,18 @@ describe('httpLambda', function() {
       expect(jsonRes.headers).toStrictEqual({});
       expect(jsonRes.body).toBe('');
 
-      done();
+      d.resolve();
     };
 
-    let handler = httpLambda(function(http, _e, _ctx) {
+    let handler = httpLambda(function(http) {
       http.createServer(function(_req, res) {
         res.end();
       });
     });
 
+    // @ts-ignore
     handler(e, ctx, cb);
+
+    await d.promise;
   });
 });

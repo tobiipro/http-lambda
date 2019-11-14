@@ -6,8 +6,8 @@ import {
 } from '../src';
 
 describe('instance of LambdaHttp', function() {
-  // eslint-disable-next-line jest/no-test-callback
-  it('createServer automatically returns by default with 200, no headers, and no body', function(done) {
+  it('createServer automatically returns by default with 200, no headers, and no body', async function() {
+    let d = _.deferred();
     let e = {};
     let ctx = {};
 
@@ -16,13 +16,16 @@ describe('instance of LambdaHttp', function() {
       expect(jsonRes.headers).toStrictEqual({});
       expect(jsonRes.body).toBe('');
 
-      done();
+      d.resolve();
     };
 
+    // @ts-ignore
     let http = new LambdaHttp(e, ctx, cb);
     http.createServer(function(_req, res) {
       res.end();
     });
+
+    await d.promise;
   });
 
   // eslint-disable-next-line jest/no-test-callback
@@ -38,6 +41,7 @@ describe('instance of LambdaHttp', function() {
       done();
     };
 
+    // @ts-ignore
     let http = new LambdaHttp(e, ctx, cb);
     http.createServer(function(req, res) {
       let ctxEnv = _.defaultsDeep({}, e.stageVariables, process.env);
@@ -61,6 +65,7 @@ describe('instance of LambdaHttp', function() {
       done();
     };
 
+    // @ts-ignore
     let http = new LambdaHttp(e, ctx, cb);
     http.createServer(function(req, res) {
       expect(req.ctx.requestContext).toStrictEqual(e.requestContext);
@@ -73,6 +78,7 @@ describe('instance of LambdaHttp', function() {
     let e = {};
     let ctx = {};
 
+    // @ts-ignore
     let http = new LambdaHttp(e, ctx, _.noop);
     // eslint-disable-next-line jest/prefer-strict-equal
     expect(http.METHODS).toEqual(originalHttp.METHODS);

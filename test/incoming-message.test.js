@@ -13,6 +13,7 @@ describe('instance of IncomingMessage', function() {
   it('retains ctx', function() {
     let e = {};
 
+    // @ts-ignore
     let req = new IncomingMessage(connection, e, ctx);
     expect(req.ctx).toBe(ctx);
   });
@@ -20,6 +21,7 @@ describe('instance of IncomingMessage', function() {
   it('emulates HTTP/1.1', function() {
     let e = {};
 
+    // @ts-ignore
     let req = new IncomingMessage(connection, e, ctx);
     expect(req.httpVersionMajor).toBe(1);
     expect(req.httpVersionMinor).toBe(1);
@@ -29,6 +31,7 @@ describe('instance of IncomingMessage', function() {
   it('turns chunked encoding off', function() {
     let e = {};
 
+    // @ts-ignore
     let req = new IncomingMessage(connection, e, ctx);
     expect(req.chunkedEncoding).toBe(false);
   });
@@ -42,6 +45,7 @@ describe('instance of IncomingMessage', function() {
       }
     };
 
+    // @ts-ignore
     let req = new IncomingMessage(connection, e, ctx);
     expect(req.url).toBe('https://example.com?foo=123&bar=456');
   });
@@ -58,6 +62,7 @@ describe('instance of IncomingMessage', function() {
       }
     };
 
+    // @ts-ignore
     let req = new IncomingMessage(connection, e, ctx);
     expect(req.headers).toStrictEqual({
       'content-length': '0',
@@ -75,6 +80,7 @@ describe('instance of IncomingMessage', function() {
       body: '1'
     };
 
+    // @ts-ignore
     let req = new IncomingMessage(connection, e, ctx);
     expect(req.headers).toStrictEqual({
       'content-length': '1'

@@ -14,43 +14,53 @@ describe('instance of ServerResponse', function() {
   it('retains ctx', function() {
     let e = {};
 
+    // @ts-ignore
     let req = new IncomingMessage(connection, e, ctx);
+    // @ts-ignore
     let res = new ServerResponse(req, ctx, _.noop);
     expect(res.ctx).toBe(ctx);
   });
 
-  // eslint-disable-next-line jest/no-test-callback
-  it('returns by default with 200, no headers, and no body', function(done) {
+  it('returns by default with 200, no headers, and no body', async function() {
+    let d = _.deferred();
     let e = {};
 
+    // @ts-ignore
     let req = new IncomingMessage(connection, e, ctx);
+    // @ts-ignore
     let res = new ServerResponse(req, ctx, function(_err, jsonRes) {
       expect(jsonRes.statusCode).toBe(200);
       expect(jsonRes.headers).toStrictEqual({});
       expect(jsonRes.body).toBe('');
 
-      done();
+      d.resolve();
     });
     res.end();
+
+    await d.promise;
   });
 
-  // eslint-disable-next-line jest/no-test-callback
-  it('can return a modified statusCode', function(done) {
+  it('can return a modified statusCode', async function() {
+    let d = _.deferred();
     let statusCode = 201;
     let e = {};
 
+    // @ts-ignore
     let req = new IncomingMessage(connection, e, ctx);
+    // @ts-ignore
     let res = new ServerResponse(req, ctx, function(_err, jsonRes) {
       expect(jsonRes.statusCode).toBe(statusCode);
 
-      done();
+      d.resolve();
     });
     res.statusCode = statusCode;
     res.end();
+
+    await d.promise;
   });
 
-  // eslint-disable-next-line jest/no-test-callback
-  it('can return modified headers', function(done) {
+  it('can return modified headers', async function() {
+    let d = _.deferred();
     let headers = {
       'x-array': [
         'true',
@@ -63,7 +73,9 @@ describe('instance of ServerResponse', function() {
 
     let e = {};
 
+    // @ts-ignore
     let req = new IncomingMessage(connection, e, ctx);
+    // @ts-ignore
     let res = new ServerResponse(req, ctx, function(_err, jsonRes) {
       _.forEach(headers, function(value, name) {
         if (_.isArray(value)) {
@@ -74,16 +86,18 @@ describe('instance of ServerResponse', function() {
         expect(jsonRes.headers[name]).toStrictEqual(value);
       });
 
-      done();
+      d.resolve();
     });
     _.forEach(headers, function(value, name) {
       res.setHeader(name, value);
     });
     res.end();
+
+    await d.promise;
   });
 
-  // eslint-disable-next-line jest/no-test-callback
-  it('can return modified statusCode and headers via writeHead', function(done) {
+  it('can return modified statusCode and headers via writeHead', async function() {
+    let d = _.deferred();
     let headers = {
       static: 'foo',
       dynamic: 'bar' // writeHead will change it to ba
@@ -94,7 +108,9 @@ describe('instance of ServerResponse', function() {
 
     let e = {};
 
+    // @ts-ignore
     let req = new IncomingMessage(connection, e, ctx);
+    // @ts-ignore
     let res = new ServerResponse(req, ctx, function(_err, jsonRes) {
       _.forEach(_.merge({}, headers, writeHeaders), function(value, name) {
         expect(jsonRes.headers[name]).toStrictEqual(value);
@@ -102,42 +118,52 @@ describe('instance of ServerResponse', function() {
 
       expect(jsonRes.headers.dynamic).toStrictEqual('baz');
 
-      done();
+      d.resolve();
     });
     _.forEach(headers, function(value, name) {
       res.setHeader(name, value);
     });
     res.writeHead(200, writeHeaders);
     res.end();
+
+    await d.promise;
   });
 
-  // eslint-disable-next-line jest/no-test-callback
-  it('can return modified body (sent as string)', function(done) {
+  it('can return modified body (sent as string)', async function() {
+    let d = _.deferred();
     let body = 'test';
 
     let e = {};
 
+    // @ts-ignore
     let req = new IncomingMessage(connection, e, ctx);
+    // @ts-ignore
     let res = new ServerResponse(req, ctx, function(_err, jsonRes) {
       expect(jsonRes.body).toStrictEqual(body);
 
-      done();
+      d.resolve();
     });
     res.end(body);
+
+    await d.promise;
   });
 
-  // eslint-disable-next-line jest/no-test-callback
-  it('can return modified body (sent as Buffer)', function(done) {
+  it('can return modified body (sent as Buffer)', async function() {
+    let d = _.deferred();
     let body = Buffer.from('test');
 
     let e = {};
 
+    // @ts-ignore
     let req = new IncomingMessage(connection, e, ctx);
+    // @ts-ignore
     let res = new ServerResponse(req, ctx, function(_err, jsonRes) {
       expect(jsonRes.body).toStrictEqual(_.toString(body));
 
-      done();
+      d.resolve();
     });
     res.end(body);
+
+    await d.promise;
   });
 });

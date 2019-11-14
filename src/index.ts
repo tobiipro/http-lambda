@@ -18,8 +18,15 @@
 /* eslint-disable max-classes-per-file */
 
 import _ from 'lodash-firecloud';
+// eslint-disable-next-line import/no-unresolved
+import awsLambda from 'aws-lambda';
 import http from 'http';
+import net from 'net';
 import querystring from 'querystring';
+
+import {
+  MaybePromise
+} from 'lodash-firecloud/types';
 
 /*
   e = {
@@ -45,7 +52,10 @@ import querystring from 'querystring';
     queryStringParameters: {},
     stageVariables: {}
   }
+*/
+type Event = awsLambda.APIGatewayEvent;
 
+/*
   ctx = {
     functionName: undefined,
     functionVersion: undefined,
@@ -78,11 +88,52 @@ import querystring from 'querystring';
     user: undefined
   }
 */
+type Context = awsLambda.Context;
+
+type Next = awsLambda.Callback<awsLambda.APIGatewayProxyResult>;
+
+type LambdaHttpHandler = (
+  http: LambdaHttp,
+  e: Event,
+  ctx: Context,
+  next: Next
+) => MaybePromise<void>;
+
+type Options = {
+  onUncaughtException?: NodeJS.UncaughtExceptionListener,
+  onUnhandledRejection?: NodeJS.UnhandledRejectionListener,
+  onInternalServerError?: () => void
+};
 
 export class LambdaHttp {
+  _e: Event;
+
+  _ctx: awsLambda.Context;
+
+  _next: Next;
+
+  _options: Options;
+
+  _connection: Partial<net.Socket>;
+
+  _req: IncomingMessage;
+
+  _res: ServerResponse;
+
+  onUncaughtException: NodeJS.UncaughtExceptionListener;
+
+  onUnhandledRejection: NodeJS.UnhandledRejectionListener;
+
+  onInternalServerError: () => void;
+
   // eslint-disable-next-line max-params
-  constructor(e = {}, ctx = {}, next = _.noop, options = {}) {
-    _.defaultsDeep(options, {
+  constructor(
+    e: Event,
+    ctx: awsLambda.Context,
+    next: Next = _.noop.bind(_),
+    options: Options = {}
+  ) {
+    _.defaults(options, {
       onUncaughtException: this._onUncaughtException.bind(this),
       onUnhandledRejection: this._onUnhandledRejection.bind(this),
       onInternalServerError: this._onInternalServerError.bind(this)
@@ -121,10 +172,12 @@ export class LambdaHttp {
     process.on('unhandledRejection', options.onUnhandledRejection);
 
     this._connection = {
-      destroy: _.noop
+      destroy: function(_err?: Error) {
+        // _.noop
+      }
     };
-    this._req = new exports.IncomingMessage(this._connection, e, ctx);
-    this._res = new exports.ServerResponse(this._req, ctx, function(...args) {
+    this._req = new IncomingMessage(this._connection, e, ctx);
+    this._res = new ServerResponse(this._req, ctx, function(...args) {
       process.removeListener('uncaughtException', options.onUncaughtException);
       process.removeListener('unhandledRejection', options.onUnhandledRejection);
       next(...args);
@@ -138,21 +191,19 @@ export class LambdaHttp {
     return this;
   }
 
-  createServer(requestListener) {
+  createServer(requestListener: (req: IncomingMessage, res: ServerResponse) => void): void {
     // we simulate that a HTTP request was received as soon as the server was created
     requestListener(this._req, this._res);
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  _onUncaughtException(err) {
+  _onUncaughtException(err: Error): void {
     // eslint-disable-next-line no-console
     console.error(err);
 
     this.onInternalServerError();
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  _onUnhandledRejection(reason, p) {
+  _onUnhandledRejection(reason: Error, p: Promise<unknown>): void {
     // eslint-disable-next-line no-console
     console.error(reason, p);
 
@@ -160,43 +211,59 @@ export class LambdaHttp {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  _onInternalServerError() {
+  _onInternalServerError(): void {
     // eslint-disable-next-line no-process-exit
     process.exit(1);
   }
 }
 
 export class IncomingMessage extends http.IncomingMessage {
+  body: string | Buffer;
+
+  ctx: awsLambda.Context;
+
   // eslint-disable-next-line max-params
-  constructor(socket, e, ctx) {
+  constructor(socket, e: Event, ctx: awsLambda.Context) {
     super(socket);
     this.httpVersionMajor = 1;
     this.httpVersionMinor = 1;
     this.httpVersion = '1.1';
+    // @ts-ignore missing typing in http.IncomingMessage
     this.chunkedEncoding = false;
+    // @ts-ignore missing typing in http.IncomingMessage
     this._removedHeader = {
       'transfer-encoding': true
     };
 
-    let query = _.defaultTo(e.queryStringParameters, {});
-    query = querystring.stringify(query);
-    query = query.length ? `?${query}` : query;
+    let queryParameters = _.defaultTo(e.queryStringParameters, {});
+    let query = querystring.stringify(queryParameters);
+    query = query.length > 0 ? `?${query}` : query;
     this.method = e.httpMethod;
     this.url = `${e.path}${query}`;
     this.headers = _.cloneDeep(e.headers);
     this.headers = _.mapKeys(this.headers, function(_value, key) {
       return _.toLower(key);
     });
-    this.headers['content-length'] = _.toString((e.body || '').length);
+    this.headers['content-length'] = _.toString(_.defaultTo(e.body, '').length);
     // see https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     this.body = e.isBase64Encoded ? Buffer.from(e.body, 'base64') : e.body;
     this.ctx = ctx;
   }
 }
 
+type WriteRawCallback = (err?: Error) => void;
+
 export class ServerResponse extends http.ServerResponse {
+  _next: Next;
+
+  _body: Buffer;
+
+  _isBinary: boolean;
+
+  ctx: awsLambda.Context;
+
   // eslint-disable-next-line max-params
-  constructor(req, ctx, next) {
+  constructor(req: IncomingMessage, ctx: awsLambda.Context, next: Next) {
     super(req);
     this._body = Buffer.from('');
 
@@ -211,16 +278,23 @@ export class ServerResponse extends http.ServerResponse {
       'end',
       'writeHead'
     ], (method) => {
+      // @ts-ignore
       // eslint-disable-next-line no-proto
       this[method] = this.__proto__[method].bind(this);
     });
   }
 
-  // eslint-disable-next-line max-params
-  _writeRaw(data, encoding, _callback) {
-    if (_.isFunction(encoding)) {
-      _callback = encoding;
+  _writeRaw(data: Buffer, _callback?: WriteRawCallback): void;
+
+  _writeRaw(data: Buffer, encoding: string, _callback?: WriteRawCallback): void;
+
+  _writeRaw(data: Buffer, encodingOrCallback: string | WriteRawCallback, _callback?: WriteRawCallback): void {
+    let encoding;
+    if (_.isFunction(encodingOrCallback)) {
+      _callback = encodingOrCallback;
       encoding = undefined;
+    } else {
+      encoding = encodingOrCallback;
     }
 
     // see https://nodejs.org/api/buffer.html#buffer_buffers_and_character_encodings
@@ -244,15 +318,17 @@ export class ServerResponse extends http.ServerResponse {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  addTrailers(_headers) {
+  addTrailers(_headers): void {
     // not supported
   }
 
-  end(data, encoding) {
+  // @ts-ignore missing typing for http.OutgoingMessage.end
+  end(data?: any, encoding?, _cb?: () => void): void {
     super.end(data, encoding);
 
     // API Gateway doesn't support multiple headers (yet)
     // case #1951724541
+    // @ts-ignore missing typing for http.ServerResponse
     let headers = _.mapValues(this._headers, function(header) {
       // NOTE this is a very naïve "solution" since the semantics are header based,
       // while here we assume that all the values of a header MUST be joined by a comma
@@ -278,18 +354,23 @@ export class ServerResponse extends http.ServerResponse {
     });
   }
 
-  // eslint-disable-next-line max-params
-  writeHead(statusCode, reason, obj) {
-    super.writeHead(statusCode, reason, obj);
+  // @ts-ignore
+  writeHead(statusCode: number, headers?: http.OutgoingHttpHeaders): this;
+
+  // @ts-ignore
+  writeHead(statusCode: number, reasonPhrase?: string, headers?: http.OutgoingHttpHeaders): this {
+    super.writeHead(statusCode, reasonPhrase, headers);
     // we want this._body to be just the body on this.end
+    // @ts-ignore missing typing for http.ServerResponse
     this._header = '';
+    return this;
   }
 }
 
-export let httpLambda = function(lambdaHandler, options) {
-  // eslint-disable-next-line max-params
-  return function(e, ctx, next) {
-    let lambdaHttp = new exports.LambdaHttp(e, ctx, next, options);
+export let httpLambda = function(lambdaHandler: LambdaHttpHandler, options?: Options) {
+  return function(e: Event, ctx: awsLambda.Context, next: Next) {
+    let lambdaHttp = new LambdaHttp(e, ctx, next, options);
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     lambdaHandler(lambdaHttp, e, ctx, next);
   };
 };
