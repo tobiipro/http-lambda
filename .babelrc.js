@@ -1,5 +1,6 @@
 module.exports = {
   presets: [
+    '@babel/preset-typescript',
     ['firecloud', {
       '@babel/preset-env': {
         targets: {
