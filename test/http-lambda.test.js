@@ -1,8 +1,8 @@
-let _ = require('lodash-firecloud');
+import _ from 'lodash-firecloud';
 
-let {
+import {
   httpLambda
-} = require('../');
+} from '../src';
 
 describe('httpLambda', function() {
   // eslint-disable-next-line jest/no-test-callback

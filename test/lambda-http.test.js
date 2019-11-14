@@ -1,9 +1,9 @@
-let _ = require('lodash-firecloud');
-let originalHttp = require('http');
+import _ from 'lodash-firecloud';
+import originalHttp from 'http';
 
-let {
+import {
   LambdaHttp
-} = require('../');
+} from '../src';
 
 describe('instance of LambdaHttp', function() {
   // eslint-disable-next-line jest/no-test-callback

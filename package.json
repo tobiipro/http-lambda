@@ -8,14 +8,25 @@
     "/BUILD",
     "/LICENSE",
     "/VERSION",
-    "/index.js"
+    "/index.js",
+    "/src/",
+    "/lib/"
   ],
   "dependencies": {
     "lodash-firecloud": "git://github.com/tobiipro/lodash-firecloud.git#semver:~0.5.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.2.0",
+    "@babel/core": "^7.2.0",
+    "@babel/node": "^7.2.0",
+    "@babel/preset-typescript": "^7.6.0",
+    "@babel/register": "^7.0.0",
+    "@babel/runtime": "^7.2.0",
     "@getify/eslint-plugin-proper-arrows": "^8.0.1",
+    "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.3",
+    "babel-jest": "^24.3.1",
+    "babel-preset-firecloud": "git://github.com/tobiipro/babel-preset-firecloud.git#semver:~0.2.5",
     "eclint": "^2.6.0",
     "eslint": "^6.5.1",
     "eslint-config-firecloud": "git://github.com/tobiipro/eslint-config-firecloud.git#semver:~0.10.2",

@@ -17,9 +17,9 @@
 
 /* eslint-disable max-classes-per-file */
 
-let _ = require('lodash-firecloud');
-let http = require('http');
-let querystring = require('querystring');
+import _ from 'lodash-firecloud';
+import http from 'http';
+import querystring from 'querystring';
 
 /*
   e = {
@@ -79,7 +79,7 @@ let querystring = require('querystring');
   }
 */
 
-exports.LambdaHttp = class LambdaHttp {
+export class LambdaHttp {
   // eslint-disable-next-line max-params
   constructor(e = {}, ctx = {}, next = _.noop, options = {}) {
     _.defaultsDeep(options, {
@@ -124,11 +124,10 @@ exports.LambdaHttp = class LambdaHttp {
       destroy: _.noop
     };
     this._req = new exports.IncomingMessage(this._connection, e, ctx);
-    this._res = new exports.ServerResponse(this._req, ctx, function() {
+    this._res = new exports.ServerResponse(this._req, ctx, function(...args) {
       process.removeListener('uncaughtException', options.onUncaughtException);
       process.removeListener('unhandledRejection', options.onUnhandledRejection);
-      // eslint-disable-next-line prefer-rest-params, fp/no-arguments
-      next(...arguments);
+      next(...args);
     });
 
     _.merge(this, _.pick(http, [
@@ -165,9 +164,9 @@ exports.LambdaHttp = class LambdaHttp {
     // eslint-disable-next-line no-process-exit
     process.exit(1);
   }
-};
+}
 
-exports.IncomingMessage = class IncomingMessage extends http.IncomingMessage {
+export class IncomingMessage extends http.IncomingMessage {
   // eslint-disable-next-line max-params
   constructor(socket, e, ctx) {
     super(socket);
@@ -193,9 +192,9 @@ exports.IncomingMessage = class IncomingMessage extends http.IncomingMessage {
     this.body = e.isBase64Encoded ? Buffer.from(e.body, 'base64') : e.body;
     this.ctx = ctx;
   }
-};
+}
 
-exports.ServerResponse = class ServerResponse extends http.ServerResponse {
+export class ServerResponse extends http.ServerResponse {
   // eslint-disable-next-line max-params
   constructor(req, ctx, next) {
     super(req);
@@ -285,9 +284,9 @@ exports.ServerResponse = class ServerResponse extends http.ServerResponse {
     // we want this._body to be just the body on this.end
     this._header = '';
   }
-};
+}
 
-exports.httpLambda = function(lambdaHandler, options) {
+export let httpLambda = function(lambdaHandler, options) {
   // eslint-disable-next-line max-params
   return function(e, ctx, next) {
     let lambdaHttp = new exports.LambdaHttp(e, ctx, next, options);

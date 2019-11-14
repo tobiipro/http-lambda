@@ -1,9 +1,9 @@
-let _ = require('lodash-firecloud');
+import _ from 'lodash-firecloud';
 
-let {
+import {
   IncomingMessage,
   ServerResponse
-} = require('../');
+} from '../src';
 
 let connection = {
   destroy: _.noop
