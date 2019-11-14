@@ -1,9 +1,6 @@
+import IncomingMessage from '../src/incoming-message';
+import ServerResponse from '../src/server-response';
 import _ from 'lodash-firecloud';
-
-import {
-  IncomingMessage,
-  ServerResponse
-} from '../src';
 
 let connection = {
   destroy: _.noop

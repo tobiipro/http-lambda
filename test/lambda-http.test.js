@@ -1,9 +1,6 @@
+import LambdaHttp from '../src/lambda-http';
 import _ from 'lodash-firecloud';
 import originalHttp from 'http';
-
-import {
-  LambdaHttp
-} from '../src';
 
 describe('instance of LambdaHttp', function() {
   it('createServer automatically returns by default with 200, no headers, and no body', async function() {

@@ -1,8 +1,5 @@
 import _ from 'lodash-firecloud';
-
-import {
-  httpLambda
-} from '../src';
+import httpLambda from '../src/http-lambda';
 
 describe('httpLambda', function() {
   it('automatically returns by default with 200, no headers, and no body', async function() {
