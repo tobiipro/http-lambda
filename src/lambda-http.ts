@@ -2,7 +2,6 @@ import IncomingMessage from './incoming-message';
 import ServerResponse from './server-response';
 import _ from 'lodash-firecloud';
 import http from 'http';
-import net from 'net';
 
 import {
   Context,
@@ -20,7 +19,9 @@ export class LambdaHttp {
 
   _options: Options;
 
-  _connection: Partial<net.Socket>;
+  _connection: {
+    destroy: (err?: Error) => void
+  };
 
   _req: IncomingMessage;
 

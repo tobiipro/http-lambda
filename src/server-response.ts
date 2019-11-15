@@ -89,11 +89,11 @@ export class ServerResponse extends http.ServerResponse {
   /* eslint-enable no-dupe-class-members */
 
   // eslint-disable-next-line class-methods-use-this
-  addTrailers(_headers): void {
+  addTrailers(_headers: http.OutgoingHttpHeaders | [string, string][]): void {
     // not supported
   }
 
-  end(data?: any, encoding?, _cb?: () => void): void {
+  end(data?: any, encoding?: any, _cb?: () => void): void {
     super.end(data, encoding);
 
     // API Gateway doesn't support multiple headers (yet)

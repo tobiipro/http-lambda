@@ -1,5 +1,6 @@
 import _ from 'lodash-firecloud';
 import http from 'http';
+import net from 'net';
 import querystring from 'querystring';
 
 import {
@@ -21,9 +22,14 @@ export class IncomingMessage extends http.IncomingMessage {
 
   ctx: Context;
 
-  // eslint-disable-next-line max-params
-  constructor(socket, e: Event, ctx: Context) {
-    super(socket);
+  constructor(
+    socket: {
+      destroy: (err?: Error) => void
+    },
+    e: Event,
+    ctx: Context
+  ) {
+    super(socket as net.Socket);
     this.httpVersionMajor = 1;
     this.httpVersionMinor = 1;
     this.httpVersion = '1.1';
