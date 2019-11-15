@@ -7,6 +7,15 @@ import {
   Event
 } from './types';
 
+declare module 'http' {
+  interface IncomingMessage {
+    chunkedEncoding: boolean;
+    _removedHeader: {
+      [key: string]: boolean;
+    }
+  }
+}
+
 export class IncomingMessage extends http.IncomingMessage {
   body: string | Buffer;
 
@@ -18,9 +27,7 @@ export class IncomingMessage extends http.IncomingMessage {
     this.httpVersionMajor = 1;
     this.httpVersionMinor = 1;
     this.httpVersion = '1.1';
-    // @ts-ignore missing typing in http.IncomingMessage
     this.chunkedEncoding = false;
-    // @ts-ignore missing typing in http.IncomingMessage
     this._removedHeader = {
       'transfer-encoding': true
     };

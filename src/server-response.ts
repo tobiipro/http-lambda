@@ -7,6 +7,19 @@ import {
   Next
 } from './types';
 
+declare module 'http' {
+  interface OutgoingMessage {
+    end(data?: any, encoding?, cb?: () => void): void;
+  }
+
+  interface ServerResponse {
+    _header: string;
+    _headers: {
+      [key: string]: string | string[];
+    }
+  }
+}
+
 type WriteRawCallback = (err?: Error) => void;
 
 export class ServerResponse extends http.ServerResponse {
@@ -78,13 +91,11 @@ export class ServerResponse extends http.ServerResponse {
     // not supported
   }
 
-  // @ts-ignore missing typing for http.OutgoingMessage.end
   end(data?: any, encoding?, _cb?: () => void): void {
     super.end(data, encoding);
 
     // API Gateway doesn't support multiple headers (yet)
     // case #1951724541
-    // @ts-ignore missing typing for http.ServerResponse
     let headers = _.mapValues(this._headers, function(header) {
       // NOTE this is a very naïve "solution" since the semantics are header based,
       // while here we assume that all the values of a header MUST be joined by a comma
@@ -117,7 +128,6 @@ export class ServerResponse extends http.ServerResponse {
   writeHead(statusCode: number, reasonPhrase?: string, headers?: http.OutgoingHttpHeaders): this {
     super.writeHead(statusCode, reasonPhrase, headers);
     // we want this._body to be just the body on this.end
-    // @ts-ignore missing typing for http.ServerResponse
     this._header = '';
     return this;
   }
