@@ -53,6 +53,7 @@ export class ServerResponse extends http.ServerResponse {
     });
   }
 
+  /* eslint-disable no-dupe-class-members */
   _writeRaw(data: Buffer, _callback?: WriteRawCallback): void;
 
   _writeRaw(data: Buffer, encoding: string, _callback?: WriteRawCallback): void;
@@ -85,6 +86,7 @@ export class ServerResponse extends http.ServerResponse {
       throw new Error('ServerResponse._writeRaw expects Buffer or string');
     }
   }
+  /* eslint-enable no-dupe-class-members */
 
   // eslint-disable-next-line class-methods-use-this
   addTrailers(_headers): void {
@@ -121,6 +123,7 @@ export class ServerResponse extends http.ServerResponse {
     });
   }
 
+  /* eslint-disable no-dupe-class-members */
   // @ts-ignore
   writeHead(statusCode: number, headers?: http.OutgoingHttpHeaders): this;
 
@@ -131,6 +134,7 @@ export class ServerResponse extends http.ServerResponse {
     this._header = '';
     return this;
   }
+  /* eslint-enable no-dupe-class-members */
 }
 
 export default ServerResponse;
