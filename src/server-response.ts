@@ -123,18 +123,22 @@ export class ServerResponse extends http.ServerResponse {
     });
   }
 
-  /* eslint-disable no-dupe-class-members */
-  // @ts-ignore
-  writeHead(statusCode: number, headers?: http.OutgoingHttpHeaders): this;
+  writeHead(
+    statusCode: number,
+    reasonPhrase?: string | http.OutgoingHttpHeaders,
+    headers?: http.OutgoingHttpHeaders
+  ): this {
+    if (_.isString(reasonPhrase)) {
+      super.writeHead(statusCode, reasonPhrase, headers);
+    } else {
+      headers = reasonPhrase;
+      super.writeHead(statusCode, headers);
+    }
 
-  // @ts-ignore
-  writeHead(statusCode: number, reasonPhrase?: string, headers?: http.OutgoingHttpHeaders): this {
-    super.writeHead(statusCode, reasonPhrase, headers);
     // we want this._body to be just the body on this.end
     this._header = '';
     return this;
   }
-  /* eslint-enable no-dupe-class-members */
 }
 
 export default ServerResponse;
