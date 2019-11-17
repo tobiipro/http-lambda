@@ -67,7 +67,7 @@ export type Context = awsLambda.Context;
 export type Next = awsLambda.Callback<awsLambda.APIGatewayProxyResult>;
 
 export type Options = {
-  onUncaughtException?: NodeJS.UncaughtExceptionListener,
-  onUnhandledRejection?: NodeJS.UnhandledRejectionListener,
-  onInternalServerError?: () => void
+  onUncaughtException?: NodeJS.UncaughtExceptionListener;
+  onUnhandledRejection?: NodeJS.UnhandledRejectionListener;
+  onInternalServerError?: () => void;
 };

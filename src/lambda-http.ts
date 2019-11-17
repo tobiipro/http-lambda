@@ -20,7 +20,7 @@ export class LambdaHttp {
   _options: Options;
 
   _connection: {
-    destroy: (err?: Error) => void
+    destroy: (err?: Error) => void;
   };
 
   _req: IncomingMessage;

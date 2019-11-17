@@ -13,7 +13,7 @@ declare module 'http' {
     chunkedEncoding: boolean;
     _removedHeader: {
       [key: string]: boolean;
-    }
+    };
   }
 }
 
@@ -24,7 +24,7 @@ export class IncomingMessage extends http.IncomingMessage {
 
   constructor(
     socket: {
-      destroy: (err?: Error) => void
+      destroy: (err?: Error) => void;
     },
     e: Event,
     ctx: Context

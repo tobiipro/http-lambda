@@ -16,7 +16,7 @@ declare module 'http' {
     _header: string;
     _headers: {
       [key: string]: string | string[];
-    }
+    };
   }
 }
 
