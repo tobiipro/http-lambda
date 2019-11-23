@@ -94,8 +94,6 @@ export class LambdaHttp {
       'METHODS',
       'STATUS_CODES'
     ]));
-
-    return this;
   }
 
   createServer(requestListener: (req: IncomingMessage, res: ServerResponse) => void): void {
