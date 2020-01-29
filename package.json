@@ -13,9 +13,11 @@
     "/src/",
     "/lib/"
   ],
+  "peerDependencies": {
+    "@types/node": ">=10"
+  },
   "dependencies": {
     "@types/aws-lambda": "^8.10.35",
-    "@types/node": "^12.12.6",
     "lodash-firecloud": "git://github.com/tobiipro/lodash-firecloud.git#semver:~0.5.1"
   },
   "devDependencies": {
@@ -27,6 +29,7 @@
     "@babel/runtime": "^7.2.0",
     "@getify/eslint-plugin-proper-arrows": "^8.0.1",
     "@types/jest": "^24.0.19",
+    "@types/node": "^10.17.14",
     "@typescript-eslint/eslint-plugin": "^2.6.0",
     "@typescript-eslint/parser": "^2.6.0",
     "babel-core": "^7.0.0-bridge.0",
