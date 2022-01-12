@@ -1,3 +1,4 @@
+/* eslint-disable jest/prefer-strict-equal */
 import LambdaHttp from '../src/lambda-http';
 import _ from 'lodash-firecloud';
 import originalHttp from 'http';
@@ -43,7 +44,9 @@ describe('instance of LambdaHttp', function() {
     http.createServer(function(req, res) {
       let ctxEnv = _.defaultsDeep({}, e.stageVariables, process.env);
 
+      // @ts-ignore
       expect(req.ctx.env).toStrictEqual(ctxEnv);
+      // @ts-ignore
       expect(res.ctx.env).toStrictEqual(ctxEnv);
       res.end();
     });
@@ -65,7 +68,9 @@ describe('instance of LambdaHttp', function() {
     // @ts-ignore
     let http = new LambdaHttp(e, ctx, cb);
     http.createServer(function(req, res) {
+      // @ts-ignore
       expect(req.ctx.requestContext).toStrictEqual(e.requestContext);
+      // @ts-ignore
       expect(res.ctx.requestContext).toStrictEqual(e.requestContext);
       res.end();
     });
@@ -77,9 +82,9 @@ describe('instance of LambdaHttp', function() {
 
     // @ts-ignore
     let http = new LambdaHttp(e, ctx, _.noop);
-    // eslint-disable-next-line jest/prefer-strict-equal
+    // @ts-ignore
     expect(http.METHODS).toEqual(originalHttp.METHODS);
-    // eslint-disable-next-line jest/prefer-strict-equal
+    // @ts-ignore
     expect(http.STATUS_CODES).toEqual(originalHttp.STATUS_CODES);
   });
 });

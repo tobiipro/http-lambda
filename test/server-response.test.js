@@ -86,6 +86,7 @@ describe('instance of ServerResponse', function() {
       d.resolve();
     });
     _.forEach(headers, function(value, name) {
+      // @ts-ignore
       res.setHeader(name, value);
     });
     res.end();
